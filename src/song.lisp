@@ -17,3 +17,9 @@
 		    (cdr name-and-metadata))))
     `(setf (get ',name 'song)
 	   (make-song :body (list ,@body) ,@metadata))))
+
+(defun song (song)
+  "Get a song designated by `song'."
+  (if (song-p song)
+      song
+      (get song 'song)))
