@@ -1,6 +1,7 @@
 (defpackage music
   (:use :cl)
   (:export defsong
+	   song
 	   make-song
 	   song-title
 	   song-composer

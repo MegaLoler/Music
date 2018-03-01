@@ -15,3 +15,5 @@
 
 (defsong some-song2
   (make-note))
+
+(song 'some-song)
