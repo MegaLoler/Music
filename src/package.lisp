@@ -1,6 +1,9 @@
 (defpackage :music
   (:use :cl)
   (:export diatonic-to-chromatic-value
+	   add-diatonic-values
+	   diatonic-mod
+	   diatonic-class
 
 	   defsong
 	   song
@@ -35,8 +38,12 @@
 	   quality
 	   augmented-diminished-quality
 	   make-quality
+	   perfect-quality-from-chromatic-offset
+	   major-minor-quality-from-chromatic-offset
+	   quality-from-chromatic-offset
 	   print-quality-type
 	   make-quality
 	   interval
+	   add
 
 	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮))

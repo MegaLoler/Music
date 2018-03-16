@@ -39,10 +39,9 @@
 (defun diatonic-to-chromatic-value (value)
   "Convert a diatonic value to a chromatic value."
   (declare (type (integer 1) value))
-  (let ((multiple (floor (1- value) 7))
-	(mod (mod (1- value) 7)))
+  (let ((multiple (floor (1- value) 7)))
     (+ (* 12 multiple)
-       (case (1+ mod)
+       (case (diatonic-class value)
 	 (1 0)
 	 (2 2)
 	 (3 4)
@@ -51,3 +50,17 @@
 	 (6 9)
 	 (7 11)
 	 (otherwise (error "Invalid value!"))))))
+
+(defun add-diatonic-values (a b)
+  "Add two diatonic values together."
+  (declare (type (integer 1) a b))
+  (+ -1 a b))
+
+(defun diatonic-mod (diatonic-value divisor)
+  "Modulo a diatonic value."
+  (declare (type (integer 1) diatonic-value divisor))
+  (1+ (mod (1- diatonic-value) divisor)))
+
+(defmethod diatonic-class ((diatonic-value integer))
+  "Return the class of a diatonic value."
+  (diatonic-mod diatonic-value 7))

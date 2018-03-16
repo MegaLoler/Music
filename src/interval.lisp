@@ -94,13 +94,13 @@
 
 (defun print-quality-type (quality stream)
   "Print a shorthand of a quality type to a stream."
+  (declare (type quality-type quality))
   (princ (case quality
 	   (perfect 'p)
 	   (major 'maj)
 	   (minor 'min)
-	   (augmented 'a)
-	   (diminished 'd)
-	   (otherwise (error "Invalid quality type!")))
+	   (augmented 'aug)
+	   (diminished 'dim))
 	 stream))
 
 (defclass quality ()
@@ -130,11 +130,40 @@
       (make-instance 'quality
 		     :type quality-type)))
 
+(defun perfect-quality-from-chromatic-offset (chromatic-offset)
+  "Return a perfect, augmented, or diminished quality with a chromatic offset."
+  (cond ((plusp chromatic-offset)
+	 (make-quality 'augmented chromatic-offset))
+	((zerop chromatic-offset)
+	 (make-quality 'perfect))
+	((minusp chromatic-offset)
+	 (make-quality 'diminished (- chromatic-offset)))))
+
+(defun major-minor-quality-from-chromatic-offset (chromatic-offset)
+  "Return a major, minor, augmented, or diminished quality from a chromatic offset."
+  (cond ((plusp chromatic-offset)
+	 (make-quality 'augmented chromatic-offset))
+	((zerop chromatic-offset)
+	 (make-quality 'major chromatic-offset))
+	((= -1 chromatic-offset)
+	 (make-quality 'minor -1))
+	((minusp chromatic-offset)
+	 (make-quality 'diminished (1- (- chromatic-offset))))))
+
+(defun quality-from-chromatic-offset (chromatic-offset diatonic-value)
+  "Return a quality from a chromatic offset for a diatonic-value."
+  (declare (type (integer 1) diatonic-value))
+  (funcall
+   (case (diatonic-class diatonic-value)
+     ((1 4 5) #'perfect-quality-from-chromatic-offset)
+     ((2 3 6 7) #'major-minor-quality-from-chromatic-offset))
+   chromatic-offset))
+
 (defmethod quality ((string string))
   "Return a quality designated by a string."
   (let* ((stream (make-string-input-stream string))
 	 (multiple-str (read-until #'not-num-char-p stream))
-	 (multiple (when (length multiple-str)
+	 (multiple (when (plusp (length multiple-str))
 		     (parse-integer multiple-str)))
 	 (type-sym (read stream nil))
 	 (type (quality-type type-sym)))
@@ -177,10 +206,20 @@
 
 (defmethod interval ((string string))
   "Return an interval designated by a string."
-  (make-instance
-   'interval
-   :diatonic-value (parse-integer (string (char string (1- (length string)))))
-   :quality (quality (subseq string 0 (1- (length string))))))
+  (let* ((stream (make-string-input-stream string))
+	 (multiple-str (read-until #'not-num-char-p stream))
+	 (quality-type-str (read-until #'num-char-p stream))
+	 (diatonic-value (read stream))
+	 (quality (make-quality (quality-type (read-from-string quality-type-str nil))
+				(read-from-string multiple-str nil)))
+	 (diatonic-class (diatonic-class diatonic-value)))
+    (case (quality-type quality)
+      (perfect (assert (typep diatonic-class '(member 1 4 5))))
+      ((major minor) (assert (typep diatonic-class '(member 2 3 6 7)))))
+    (make-instance
+     'interval
+     :diatonic-value diatonic-value
+     :quality quality)))
 
 (defmethod interval ((symbol symbol))
   "Return an interval designated by a symbol."
@@ -191,6 +230,42 @@
   (princ (quality interval) stream)
   (princ (diatonic-value interval) stream))
 
+(defmethod quality-type ((interval interval))
+  "Return the quality type of an interval."
+  (quality-type (quality interval)))
+
+(defmethod diatonic-class ((interval interval))
+  "Return the diatonic class of an interval."
+  (diatonic-class (diatonic-value interval)))
+
+(defmethod chromatic-offset ((interval interval))
+  "Return the chromatic offset of the quality of an interval."
+  (let ((chromatic-offset (chromatic-offset (quality interval))))
+    (+ chromatic-offset
+       (case (diatonic-class interval)
+	 ((1 4 5) 0)
+	 ((2 3 6 7)
+	  (if (eql (quality-type interval)
+		   'diminished)
+	      -1 0))
+	 (otherwise (error "Invalid interval!"))))))
+
 (defmethod chromatic-value ((interval interval))
   "Return the chromatic value of an interval."
-  (diatonic-to-chromatic-value (diatonic-value interval)))
+  (+ (diatonic-to-chromatic-value (diatonic-value interval))
+     (chromatic-offset interval)))
+
+(defmethod add ((a interval) (b interval))
+  "Return the sum of two intervals."
+  (let* ((diatonic-value (add-diatonic-values (diatonic-value a)
+					      (diatonic-value b)))
+	 (natural-chromatic-value (diatonic-to-chromatic-value diatonic-value))
+	 (target-chromatic-value (+ (chromatic-value a)
+				    (chromatic-value b)))
+	 (chromatic-offset (- target-chromatic-value
+			      natural-chromatic-value)))
+    (make-instance
+     'interval
+     :diatonic-value diatonic-value
+     :quality (quality-from-chromatic-offset chromatic-offset diatonic-value))))
+
