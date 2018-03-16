@@ -26,11 +26,11 @@
 	   midi-value
 
 	   quality-type
-	   perfect
-	   major
-	   minor
-	   augmented
-	   diminished
+	   perfect perf p
+	   major maj ma mj
+	   minor min mi mn
+	   augmented aug a
+	   diminished dim d
 
 	   quality
 	   augmented-diminished-quality

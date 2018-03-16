@@ -73,7 +73,7 @@
   7)
 
 (defmethod chromatic-offset ((accidental (eql '𝄪)))
-  "Return the chromatic value of a doubl sharp accidental."
+  "Return the chromatic value of a double sharp accidental."
   2)
 
 (defmethod chromatic-offset ((accidental (eql '♯)))

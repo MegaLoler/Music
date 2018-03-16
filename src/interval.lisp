@@ -24,14 +24,82 @@
   "Return the chromatic offset of a diminished quality type."
   -1)
 
+(defmethod quality-type ((quality (eql 'perfect)))
+  "Return a perfect quality type."
+  'perfect)
+
+(defmethod quality-type ((quality (eql 'perf)))
+  "Return a perfect quality type."
+  'perfect)
+
+(defmethod quality-type ((quality (eql 'p)))
+  "Return a perfect quality type."
+  'perfect)
+
+(defmethod quality-type ((quality (eql 'major)))
+  "Return a major quality type."
+  'major)
+
+(defmethod quality-type ((quality (eql 'maj)))
+  "Return a major quality type."
+  'major)
+
+(defmethod quality-type ((quality (eql 'ma)))
+  "Return a major quality type."
+  'major)
+
+(defmethod quality-type ((quality (eql 'mj)))
+  "Return a major quality type."
+  'major)
+
+(defmethod quality-type ((quality (eql 'minor)))
+  "Return a minor quality type."
+  'minor)
+
+(defmethod quality-type ((quality (eql 'min)))
+  "Return a minor quality type."
+  'minor)
+
+(defmethod quality-type ((quality (eql 'mi)))
+  "Return a minor quality type."
+  'minor)
+
+(defmethod quality-type ((quality (eql 'mn)))
+  "Return a minor quality type."
+  'minor)
+
+(defmethod quality-type ((quality (eql 'augmented)))
+  "Return an augmented quality type."
+  'augmented)
+
+(defmethod quality-type ((quality (eql 'aug)))
+  "Return an augmented quality type."
+  'augmented)
+
+(defmethod quality-type ((quality (eql 'a)))
+  "Return an augmented quality type."
+  'augmented)
+
+(defmethod quality-type ((quality (eql 'diminished)))
+  "Return an diminished quality type."
+  'diminished)
+
+(defmethod quality-type ((quality (eql 'dim)))
+  "Return an diminished quality type."
+  'diminished)
+
+(defmethod quality-type ((quality (eql 'd)))
+  "Return an diminished quality type."
+  'diminished)
+
 (defun print-quality-type (quality stream)
   "Print a shorthand of a quality type to a stream."
   (princ (case quality
-	   (perfect 'perf)
+	   (perfect 'p)
 	   (major 'maj)
 	   (minor 'min)
-	   (augmented 'aug)
-	   (diminished 'dim)
+	   (augmented 'a)
+	   (diminished 'd)
 	   (otherwise (error "Invalid quality type!")))
 	 stream))
 
@@ -61,6 +129,20 @@
 		     :multiple multiple)
       (make-instance 'quality
 		     :type quality-type)))
+
+(defmethod quality ((string string))
+  "Return a quality designated by a string."
+  (let* ((stream (make-string-input-stream string))
+	 (multiple-str (read-until #'not-num-char-p stream))
+	 (multiple (when (length multiple-str)
+		     (parse-integer multiple-str)))
+	 (type-sym (read stream nil))
+	 (type (quality-type type-sym)))
+    (make-quality type multiple)))
+
+(defmethod quality ((symbol symbol))
+  "Return a quality designated by a symbol."
+  (quality (string symbol)))
 
 (defmethod chromatic-offset ((quality quality))
   "Return the chromatic offset of quality."
@@ -92,6 +174,17 @@
     :initform (make-quality 'perfect)
     :type quality
     :accessor quality)))
+
+(defmethod interval ((string string))
+  "Return an interval designated by a string."
+  (make-instance
+   'interval
+   :diatonic-value (parse-integer (string (char string (1- (length string)))))
+   :quality (quality (subseq string 0 (1- (length string))))))
+
+(defmethod interval ((symbol symbol))
+  "Return an interval designated by a symbol."
+  (interval (string symbol)))
 
 (defmethod print-object ((interval interval) stream)
   "Print the shorthand for an interval to a stream."
