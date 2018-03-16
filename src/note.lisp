@@ -119,6 +119,10 @@
    :letter-name (symbol-from-char (char string 0))
    :chromatic-offset (chromatic-offset (subseq string 1))))
 
+(defmethod pitch-class ((symbol symbol))
+  "Return a pitch class designated by a symbol."
+  (pitch-class (string symbol)))
+
 (defmethod print-object ((pitch-class pitch-class) stream)
   "Print a readable representation of a pitch class to a stream."
   (princ (letter-name pitch-class) stream)
@@ -149,6 +153,22 @@
    :pitch-class (pitch-class (subseq string 0 (1- (length string))))
    :octave (parse-integer (string (char string (1- (length string)))))))
 
+(defmethod note ((symbol symbol))
+  "Return a note designated by a symbol."
+  (note (string symbol)))
+
+(defmethod letter-name ((note note))
+  "Return the letter name of a note."
+  (letter-name (pitch-class note)))
+
+(defmethod chromatic-offset ((note note))
+  "Return the chromatic value of a note."
+  (chromatic-offset (pitch-class note)))
+
+(defmethod chromatic-value ((note note))
+  "Return the chromatic value of a note."
+  (chromatic-value (pitch-class note)))
+
 (defmethod print-object ((note note) stream)
   "Print a readable representation of a note to a stream."
   (princ (pitch-class note) stream)
@@ -160,5 +180,5 @@
 
 (defmethod midi-value ((note note))
   "Return the midi note value of a note."
-  (+ (chromatic-value (pitch-class note))
+  (+ (chromatic-value note)
      (octave-midi-value (octave note))))

@@ -3,3 +3,4 @@
 *.swp
 .#*
 scratch.lisp
+*.fasl
