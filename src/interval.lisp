@@ -255,13 +255,19 @@
   (+ (diatonic-to-chromatic-value (diatonic-value interval))
      (chromatic-offset interval)))
 
-(defmethod add ((a interval) (b interval))
-  "Return the sum of two intervals."
-  (let* ((diatonic-value (add-diatonic-values (diatonic-value a)
-					      (diatonic-value b)))
+(defmethod operate
+    ((a interval)
+     (b interval)
+     (diatonic-func function)
+     (chromatic-func function))
+  "Return the interval resulting from performing an operation on the diatonic and chromatic values of two intervals."
+  (let* ((diatonic-value (funcall diatonic-func
+				  (diatonic-value a)
+				  (diatonic-value b)))
 	 (natural-chromatic-value (diatonic-to-chromatic-value diatonic-value))
-	 (target-chromatic-value (+ (chromatic-value a)
-				    (chromatic-value b)))
+	 (target-chromatic-value (funcall chromatic-func
+					  (chromatic-value a)
+					  (chromatic-value b)))
 	 (chromatic-offset (- target-chromatic-value
 			      natural-chromatic-value)))
     (make-instance
@@ -269,3 +275,10 @@
      :diatonic-value diatonic-value
      :quality (quality-from-chromatic-offset chromatic-offset diatonic-value))))
 
+(defmethod sum ((a interval) (b interval))
+  "Return the sum of two intervals."
+  (operate a b #'add-diatonic-values #'+))
+
+(defmethod difference ((a interval) (b interval))
+  "Return the difference between two intervals."
+  (operate a b #'subtract-diatonic-values #'-))

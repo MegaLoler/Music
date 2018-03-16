@@ -2,6 +2,7 @@
   (:use :cl)
   (:export diatonic-to-chromatic-value
 	   add-diatonic-values
+	   subtract-diatonic-values
 	   diatonic-mod
 	   diatonic-class
 
@@ -44,6 +45,9 @@
 	   print-quality-type
 	   make-quality
 	   interval
-	   add
+	   operate
+	   sum
+	   difference
+	   reduce
 
 	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮))

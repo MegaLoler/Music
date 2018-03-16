@@ -56,6 +56,11 @@
   (declare (type (integer 1) a b))
   (+ -1 a b))
 
+(defun subtract-diatonic-values (a b)
+  "Return the difference between two diatonic values."
+  (declare (type (integer 1) a b))
+  (1+ (abs (- (1- a) (1- b)))))
+
 (defun diatonic-mod (diatonic-value divisor)
   "Modulo a diatonic value."
   (declare (type (integer 1) diatonic-value divisor))
