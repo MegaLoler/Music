@@ -6,5 +6,6 @@
 			:serial t
 			:components
 			((:file "package")
+			 (:file "util")
 			 (:file "song")
 			 (:file "note")))))

@@ -1,16 +1,26 @@
-(defpackage music
+(defpackage :music
   (:use :cl)
   (:export defsong
 	   song
-	   make-song
-	   song-title
-	   song-composer
-	   song-programmer
-	   song-body
+	   title
+	   composer
+	   programmer
+	   description
+	   body
+
 	   letter-name
-	   make-pitch-class
-	   pitch-class-letter-name
-	   pitch-class-accidental
-	   make-note
-	   note-pitch-class
-	   note-octave))
+	   letter-name-p
+	   accidental
+	   accidental-p
+	   chromatic-value
+	   diatonic-value
+	   chromatic-offset
+	   print-chromatic-offset
+	   pitch-class
+	   print-object
+	   note
+	   octave
+	   octave-midi-value
+	   midi-value
+
+	   a b c d e f g ♯ 𝄪 ♭ ♮))
