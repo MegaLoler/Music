@@ -1,6 +1,8 @@
 (defpackage :music
   (:use :cl)
-  (:export defsong
+  (:export diatonic-to-chromatic-value
+
+	   defsong
 	   song
 	   title
 	   composer
@@ -23,4 +25,18 @@
 	   octave-midi-value
 	   midi-value
 
-	   a b c d e f g ♯ 𝄪 ♭ ♮))
+	   quality-type
+	   perfect
+	   major
+	   minor
+	   augmented
+	   diminished
+
+	   quality
+	   augmented-diminished-quality
+	   make-quality
+	   print-quality-type
+	   make-quality
+	   interval
+
+	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮))

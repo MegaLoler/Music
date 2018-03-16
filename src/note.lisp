@@ -6,7 +6,7 @@
 
 (deftype accidental ()
   "An accidental symbol."
-  `(member ♯ 𝄪 ♭ ♮))
+  `(member ♯ 𝄪 ♭ 𝄫 ♮))
 
 (defun letter-name-p (object)
   "Whether an object is a letter name."
@@ -73,20 +73,24 @@
   7)
 
 (defmethod chromatic-offset ((accidental (eql '𝄪)))
-  "Return the chromatic value of a sharp accidental."
+  "Return the chromatic value of a doubl sharp accidental."
   2)
 
 (defmethod chromatic-offset ((accidental (eql '♯)))
   "Return the chromatic value of a sharp accidental."
   1)
 
+(defmethod chromatic-offset ((accidental (eql '♮)))
+  "Return the chromatic value of a natural accidental."
+  0)
+
 (defmethod chromatic-offset ((accidental (eql '♭)))
   "Return the chromatic value of a flat accidental."
   -1)
 
-(defmethod chromatic-offset ((accidental (eql '♮)))
-  "Return the chromatic value of a natural accidental."
-  0)
+(defmethod chromatic-offset ((accidental (eql '𝄫)))
+  "Return the chromatic value of a double flat accidental."
+  -2)
 
 (defmethod chromatic-offset ((string string))
   "Return the chromatic offset disignated by a string."
