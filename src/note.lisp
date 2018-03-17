@@ -1,5 +1,9 @@
 (in-package :music)
 
+;; TODO:
+;;   better note reading (use read-until, and support reading beyond 0-9 ints)
+;;   read and print Double Sharps and Double Flat signs
+
 (deftype letter-name ()
   "A letter name of a note."
   `(member a b c d e f g))
@@ -15,6 +19,34 @@
 (defun accidental-p (object)
   "Whether an object is an accidental symbol."
   (typep object 'accidental))
+
+(defmethod letter-name ((diatonic-class (eql 1)))
+  "Return the letter name of a diatonic class value."
+  'c)
+
+(defmethod letter-name ((diatonic-class (eql 2)))
+  "Return the letter name of a diatonic class value."
+  'd)
+
+(defmethod letter-name ((diatonic-class (eql 3)))
+  "Return the letter name of a diatonic class value."
+  'e)
+
+(defmethod letter-name ((diatonic-class (eql 4)))
+  "Return the letter name of a diatonic class value."
+  'f)
+
+(defmethod letter-name ((diatonic-class (eql 5)))
+  "Return the letter name of a diatonic class value."
+  'g)
+
+(defmethod letter-name ((diatonic-class (eql 6)))
+  "Return the letter name of a diatonic class value."
+  'a)
+
+(defmethod letter-name ((diatonic-class (eql 7)))
+  "Return the letter name of a diatonic class value."
+  'b)
 
 (defmethod chromatic-value ((letter-name (eql 'c)))
   "Return the chromatic value of the letter name C."
@@ -102,7 +134,7 @@
 
 (defun print-chromatic-offset (offset stream)
   "Format a readable representation of a chromatic offset to a stream."
-  (format stream "~v@{~A~:*~}" offset (if (plusp offset) #\♯ #\♭)))
+  (format stream "~v@{~A~:*~}" (abs offset) (if (plusp offset) #\♯ #\♭)))
 
 (defclass pitch-class ()
   ((letter-name
@@ -127,6 +159,13 @@
   "Return a pitch class designated by a symbol."
   (pitch-class (string symbol)))
 
+(defun make-pitch-class (diatonic-class chromatic-offset)
+  "Construct a pitch class from a diatonic class and a chromatic offset."
+  (make-instance
+   'pitch-class
+   :letter-name (letter-name diatonic-class)
+   :chromatic-offset chromatic-offset))
+
 (defmethod print-object ((pitch-class pitch-class) stream)
   "Print a readable representation of a pitch class to a stream."
   (princ (letter-name pitch-class) stream)
@@ -136,6 +175,10 @@
   "Return pitch the chromatic value of a pitch class."
   (+ (chromatic-value (letter-name pitch-class))
      (chromatic-offset pitch-class)))
+
+(defmethod diatonic-value ((pitch-class pitch-class))
+  "Return the diatonic value of a pitch class."
+  (diatonic-value (letter-name pitch-class)))
 
 (defclass note ()
   ((pitch-class
@@ -161,6 +204,21 @@
   "Return a note designated by a symbol."
   (note (string symbol)))
 
+(defun make-note (diatonic-value chromatic-value)
+  "Construct a note with a diatonic value and a chromatic value."
+  (let* ((octave (1- (floor (1- diatonic-value) 7)))
+	 (diatonic-class (subtract-diatonic-values
+			  diatonic-value
+			  (octave-diatonic-offset octave)))
+	 (natural-chromatic-value (+ (diatonic-to-chromatic-value diatonic-class)
+				     (octave-chromatic-offset octave)))
+	 (chromatic-offset (- chromatic-value natural-chromatic-value))
+	 (pitch-class (make-pitch-class diatonic-class chromatic-offset)))
+    (make-instance
+     'note
+     :pitch-class pitch-class
+     :octave octave)))
+
 (defmethod letter-name ((note note))
   "Return the letter name of a note."
   (letter-name (pitch-class note)))
@@ -169,20 +227,55 @@
   "Return the chromatic value of a note."
   (chromatic-offset (pitch-class note)))
 
+(defmethod chromatic-class ((note note))
+  "Return the chromatic class of a note."
+  (chromatic-value (pitch-class note)))
+
+(defmethod diatonic-class ((note note))
+  "Return the diatonic class of a note."
+  (diatonic-value (pitch-class note)))
+
+(defun octave-chromatic-offset (octave)
+  "Return the chromatic offset of an octave."
+  (* 12 (1+ octave)))
+
+(defun octave-diatonic-offset (octave)
+  "Return the diatonic offset of an octave."
+  (1+ (* 7 (1+ octave))))
+
 (defmethod chromatic-value ((note note))
   "Return the chromatic value of a note."
-  (chromatic-value (pitch-class note)))
+  (+ (chromatic-class note)
+     (octave-chromatic-offset (octave note))))
+
+(defmethod diatonic-value ((note note))
+  "Return the diatonic value of a note."
+  (add-diatonic-values (diatonic-class note)
+		       (octave-diatonic-offset (octave note))))
 
 (defmethod print-object ((note note) stream)
   "Print a readable representation of a note to a stream."
   (princ (pitch-class note) stream)
   (princ (octave note) stream))
 
-(defun octave-midi-value (octave)
-  "Return the midi offset of an octave."
-  (* 12 (1+ octave)))
+(defmethod difference ((a note) (b note))
+  "Return the interval between two notes."
+  (make-interval (subtract-diatonic-values (diatonic-value a)
+					   (diatonic-value b))
+		 (abs (- (chromatic-value a)
+			 (chromatic-value b)))))
 
-(defmethod midi-value ((note note))
-  "Return the midi note value of a note."
-  (+ (chromatic-value note)
-     (octave-midi-value (octave note))))
+(defmethod above ((note note) (interval interval))
+  "Return the note an interval above another note."
+  (make-note (add-diatonic-values (diatonic-value note)
+				  (diatonic-value interval))
+	     (+ (chromatic-value note)
+		(chromatic-value interval))))
+
+(defmethod below ((note note) (interval interval))
+  "Return the note an interval below another note."
+  (make-note (subtract-diatonic-values (diatonic-value note)
+				       (diatonic-value interval))
+	     (- (chromatic-value note)
+		(chromatic-value interval))))
+

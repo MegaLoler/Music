@@ -5,6 +5,7 @@
 	   subtract-diatonic-values
 	   diatonic-mod
 	   diatonic-class
+	   chromatic-class
 
 	   defsong
 	   song
@@ -23,11 +24,15 @@
 	   chromatic-offset
 	   print-chromatic-offset
 	   pitch-class
+	   make-pitch-class
 	   print-object
+	   make-note
 	   note
 	   octave
-	   octave-midi-value
-	   midi-value
+	   octave-chromatic-offset
+	   octave-diatonic-offset
+	   above
+	   below
 
 	   quality-type
 	   perfect perf p
@@ -45,6 +50,7 @@
 	   print-quality-type
 	   make-quality
 	   interval
+	   make-interval
 	   operate
 	   sum
 	   difference

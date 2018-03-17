@@ -225,6 +225,15 @@
   "Return an interval designated by a symbol."
   (interval (string symbol)))
 
+(defun make-interval (diatonic-value chromatic-value)
+  "Construct an interval from a diatonic value and a chromatic value."
+  (let* ((natural-chromatic-value (diatonic-to-chromatic-value diatonic-value))
+	 (chromatic-offset (- chromatic-value natural-chromatic-value)))
+    (make-instance
+     'interval
+     :diatonic-value diatonic-value
+     :quality (quality-from-chromatic-offset chromatic-offset diatonic-value))))
+
 (defmethod print-object ((interval interval) stream)
   "Print the shorthand for an interval to a stream."
   (princ (quality interval) stream)
@@ -261,19 +270,12 @@
      (diatonic-func function)
      (chromatic-func function))
   "Return the interval resulting from performing an operation on the diatonic and chromatic values of two intervals."
-  (let* ((diatonic-value (funcall diatonic-func
-				  (diatonic-value a)
-				  (diatonic-value b)))
-	 (natural-chromatic-value (diatonic-to-chromatic-value diatonic-value))
-	 (target-chromatic-value (funcall chromatic-func
-					  (chromatic-value a)
-					  (chromatic-value b)))
-	 (chromatic-offset (- target-chromatic-value
-			      natural-chromatic-value)))
-    (make-instance
-     'interval
-     :diatonic-value diatonic-value
-     :quality (quality-from-chromatic-offset chromatic-offset diatonic-value))))
+  (make-interval (funcall diatonic-func
+			  (diatonic-value a)
+			  (diatonic-value b))
+		 (funcall chromatic-func
+			  (chromatic-value a)
+			  (chromatic-value b))))
 
 (defmethod sum ((a interval) (b interval))
   "Return the sum of two intervals."
