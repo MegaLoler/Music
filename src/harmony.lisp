@@ -3,6 +3,7 @@
 ;; TODO
 ;;   harmony constructor from roman numeral and chord notation
 ;;   give make-harmony ability to Alter members of the harmony!
+;;   make build-harmony into a fancy macro that can take notes and/or intervals arbitrarily and stack them
 
 (defun make-harmony (&optional (key (key 'c-major)) (degree 1) (inversion 0) (members 3) (interval 3))
   "Return a set of pitch classes of a harmony built from the scale of a key."

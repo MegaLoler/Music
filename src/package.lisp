@@ -36,6 +36,7 @@
 	   above
 	   below
 	   note-or-pitch-class
+	   nearest
 
 	   quality-type
 	   perfect perf p
@@ -86,6 +87,7 @@
 	   parallel
 	   relative
 	   solfège-syllable
+	   resolve
 
 	   harmony
 	   make-harmony
@@ -93,4 +95,7 @@
 	   invert
 	   
 	   do di ra re ri me mi fa fi se sol si le la li te ti
-	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮))
+	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮ |#| b is es
+
+	   musical-rest rest r
+	   play))

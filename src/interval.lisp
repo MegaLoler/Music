@@ -1,5 +1,8 @@
 (in-package :music)
 
+;; TODO:
+;;   invert intervals
+
 (deftype quality-type ()
   "A type of quality of an interval."
   `(member perfect major minor augmented diminished))

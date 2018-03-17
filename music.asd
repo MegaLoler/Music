@@ -11,4 +11,5 @@
 			 (:file "interval")
 			 (:file "note")
 			 (:file "scale")
-			 (:file "harmony")))))
+			 (:file "harmony")
+			 (:file "play")))))

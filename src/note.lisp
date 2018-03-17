@@ -4,6 +4,7 @@
 ;;   better note reading (use read-until, and support reading beyond 0-9 ints)
 ;;   read and print Double Sharps and Double Flat signs
 ;;   make interval above and below for pitch classes less hacky
+;;   also read # and b as alternatives???  and is and es
 
 (deftype letter-name ()
   "A letter name of a note."
@@ -11,7 +12,7 @@
 
 (deftype accidental ()
   "An accidental symbol."
-  `(member ♯ 𝄪 ♭ 𝄫 ♮))
+  `(member ♯ 𝄪 ♭ 𝄫 ♮ |#| b is es))
 
 (defun letter-name-p (object)
   "Whether an object is a letter name."
@@ -47,8 +48,12 @@
 
 (defmethod chromatic-offset ((accidental (eql '𝄪))) 2)
 (defmethod chromatic-offset ((accidental (eql '♯))) 1)
+(defmethod chromatic-offset ((accidental (eql '|#|))) 1)
+(defmethod chromatic-offset ((accidental (eql 'is))) 1)
 (defmethod chromatic-offset ((accidental (eql '♮))) 0)
 (defmethod chromatic-offset ((accidental (eql '♭))) -1)
+(defmethod chromatic-offset ((accidental (eql 'b))) -1)
+(defmethod chromatic-offset ((accidental (eql 'es))) -1)
 (defmethod chromatic-offset ((accidental (eql '𝄫))) -2)
 
 (defmethod chromatic-offset ((string string))
@@ -242,3 +247,22 @@
 (defmethod note-or-pitch-class ((pitch-class pitch-class))
   "Return a pitch class designated by itself."
   pitch-class)
+
+(defmethod nearest ((pitch-class pitch-class) (note note))
+  "Return the note with a pitch class nearest to a note."
+  (let ((octave-offset
+	 (if (> (subtract-diatonic-values
+		 (diatonic-value pitch-class)
+		 (diatonic-class note))
+		4)
+	     (if (> (diatonic-class note) 4)
+		 1 -1)
+	     0)))
+    (make-instance
+     'note
+     :pitch-class pitch-class
+     :octave (+ (octave note) octave-offset))))
+
+(defmethod nearest ((a note) (b note))
+  "Return the note."
+  a)
