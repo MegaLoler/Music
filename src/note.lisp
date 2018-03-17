@@ -21,109 +21,35 @@
   "Whether an object is an accidental symbol."
   (typep object 'accidental))
 
-(defmethod letter-name ((diatonic-class (eql 1)))
-  "Return the letter name of a diatonic class value."
-  'c)
+(defmethod letter-name ((diatonic-class (eql 1))) 'c)
+(defmethod letter-name ((diatonic-class (eql 2))) 'd)
+(defmethod letter-name ((diatonic-class (eql 3))) 'e)
+(defmethod letter-name ((diatonic-class (eql 4))) 'f)
+(defmethod letter-name ((diatonic-class (eql 5))) 'g)
+(defmethod letter-name ((diatonic-class (eql 6))) 'a)
+(defmethod letter-name ((diatonic-class (eql 7))) 'b)
 
-(defmethod letter-name ((diatonic-class (eql 2)))
-  "Return the letter name of a diatonic class value."
-  'd)
+(defmethod chromatic-value ((letter-name (eql 'c))) 0)
+(defmethod chromatic-value ((letter-name (eql 'd))) 2)
+(defmethod chromatic-value ((letter-name (eql 'e))) 4)
+(defmethod chromatic-value ((letter-name (eql 'f))) 5)
+(defmethod chromatic-value ((letter-name (eql 'g))) 7)
+(defmethod chromatic-value ((letter-name (eql 'a))) 9)
+(defmethod chromatic-value ((letter-name (eql 'b))) 11)
 
-(defmethod letter-name ((diatonic-class (eql 3)))
-  "Return the letter name of a diatonic class value."
-  'e)
+(defmethod diatonic-value ((letter-name (eql 'c))) 1)
+(defmethod diatonic-value ((letter-name (eql 'd))) 2)
+(defmethod diatonic-value ((letter-name (eql 'e))) 3)
+(defmethod diatonic-value ((letter-name (eql 'f))) 4)
+(defmethod diatonic-value ((letter-name (eql 'g))) 5)
+(defmethod diatonic-value ((letter-name (eql 'a))) 6)
+(defmethod diatonic-value ((letter-name (eql 'b))) 7)
 
-(defmethod letter-name ((diatonic-class (eql 4)))
-  "Return the letter name of a diatonic class value."
-  'f)
-
-(defmethod letter-name ((diatonic-class (eql 5)))
-  "Return the letter name of a diatonic class value."
-  'g)
-
-(defmethod letter-name ((diatonic-class (eql 6)))
-  "Return the letter name of a diatonic class value."
-  'a)
-
-(defmethod letter-name ((diatonic-class (eql 7)))
-  "Return the letter name of a diatonic class value."
-  'b)
-
-(defmethod chromatic-value ((letter-name (eql 'c)))
-  "Return the chromatic value of the letter name C."
-  0)
-
-(defmethod chromatic-value ((letter-name (eql 'd)))
-  "Return the chromatic value of the letter name D."
-  2)
-
-(defmethod chromatic-value ((letter-name (eql 'e)))
-  "Return the chromatic value of the letter name E."
-  4)
-
-(defmethod chromatic-value ((letter-name (eql 'f)))
-  "Return the chromatic value of the letter name F."
-  5)
-
-(defmethod chromatic-value ((letter-name (eql 'g)))
-  "Return the chromatic value of the letter name G."
-  7)
-
-(defmethod chromatic-value ((letter-name (eql 'a)))
-  "Return the chromatic value of the letter name A."
-  9)
-
-(defmethod chromatic-value ((letter-name (eql 'b)))
-  "Return the chromatic value of the letter name B."
-  11)
-
-(defmethod diatonic-value ((letter-name (eql 'c)))
-  "Return the diatonic value of the letter name C."
-  1)
-
-(defmethod diatonic-value ((letter-name (eql 'd)))
-  "Return the diatonic value of the letter name D."
-  2)
-
-(defmethod diatonic-value ((letter-name (eql 'e)))
-  "Return the diatonic value of the letter name E."
-  3)
-
-(defmethod diatonic-value ((letter-name (eql 'f)))
-  "Return the diatonic value of the letter name F."
-  4)
-
-(defmethod diatonic-value ((letter-name (eql 'g)))
-  "Return the diatonic value of the letter name G."
-  5)
-
-(defmethod diatonic-value ((letter-name (eql 'a)))
-  "Return the diatonic value of the letter name A."
-  6)
-
-(defmethod diatonic-value ((letter-name (eql 'b)))
-  "Return the diatonic value of the letter name B."
-  7)
-
-(defmethod chromatic-offset ((accidental (eql '𝄪)))
-  "Return the chromatic value of a double sharp accidental."
-  2)
-
-(defmethod chromatic-offset ((accidental (eql '♯)))
-  "Return the chromatic value of a sharp accidental."
-  1)
-
-(defmethod chromatic-offset ((accidental (eql '♮)))
-  "Return the chromatic value of a natural accidental."
-  0)
-
-(defmethod chromatic-offset ((accidental (eql '♭)))
-  "Return the chromatic value of a flat accidental."
-  -1)
-
-(defmethod chromatic-offset ((accidental (eql '𝄫)))
-  "Return the chromatic value of a double flat accidental."
-  -2)
+(defmethod chromatic-offset ((accidental (eql '𝄪))) 2)
+(defmethod chromatic-offset ((accidental (eql '♯))) 1)
+(defmethod chromatic-offset ((accidental (eql '♮))) 0)
+(defmethod chromatic-offset ((accidental (eql '♭))) -1)
+(defmethod chromatic-offset ((accidental (eql '𝄫))) -2)
 
 (defmethod chromatic-offset ((string string))
   "Return the chromatic offset disignated by a string."

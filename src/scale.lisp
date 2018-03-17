@@ -3,6 +3,9 @@
 (deftype scale-degree ()
   `(member tonic supertonic mediant subdominant dominant submediant subtonic leading-tone))
 
+(deftype solfège-syllable ()
+  `(member do di ra re ri me mi fa fi se sol si le la li te ti))
+
 (deftype mode ()
   `(member major minor harmonic-minor melodic-minor ionian dorian phrygian lydian mixolydian aeolian locrian))
 
@@ -18,81 +21,80 @@
     (6 'aeolian)
     (7 'locrian)))
 
-(defmethod diatonic-value ((mode (eql 'ionian)))
-  "Return the diatonic value of ionian."
-  1)
+(defmethod diatonic-value ((syllable (eql 'do))) 1)
+(defmethod diatonic-value ((syllable (eql 'di))) 1)
+(defmethod diatonic-value ((syllable (eql 'ra))) 2)
+(defmethod diatonic-value ((syllable (eql 're))) 2)
+(defmethod diatonic-value ((syllable (eql 'ri))) 2)
+(defmethod diatonic-value ((syllable (eql 'me))) 3)
+(defmethod diatonic-value ((syllable (eql 'mi))) 3)
+(defmethod diatonic-value ((syllable (eql 'fa))) 4)
+(defmethod diatonic-value ((syllable (eql 'fi))) 4)
+(defmethod diatonic-value ((syllable (eql 'se))) 5)
+(defmethod diatonic-value ((syllable (eql 'sol))) 5)
+(defmethod diatonic-value ((syllable (eql 'si))) 5)
+(defmethod diatonic-value ((syllable (eql 'le))) 6)
+(defmethod diatonic-value ((syllable (eql 'la))) 6)
+(defmethod diatonic-value ((syllable (eql 'li))) 6)
+(defmethod diatonic-value ((syllable (eql 'te))) 7)
+(defmethod diatonic-value ((syllable (eql 'ti))) 7)
 
-(defmethod diatonic-value ((mode (eql 'dorian)))
-  "Return the diatonic value of dorian."
-  2)
+(defmethod chromatic-value ((syllable (eql 'do))) 0)
+(defmethod chromatic-value ((syllable (eql 'di))) 1)
+(defmethod chromatic-value ((syllable (eql 'ra))) 1)
+(defmethod chromatic-value ((syllable (eql 're))) 2)
+(defmethod chromatic-value ((syllable (eql 'ri))) 3)
+(defmethod chromatic-value ((syllable (eql 'me))) 3)
+(defmethod chromatic-value ((syllable (eql 'mi))) 4)
+(defmethod chromatic-value ((syllable (eql 'fa))) 5)
+(defmethod chromatic-value ((syllable (eql 'fi))) 6)
+(defmethod chromatic-value ((syllable (eql 'se))) 6)
+(defmethod chromatic-value ((syllable (eql 'sol))) 7)
+(defmethod chromatic-value ((syllable (eql 'si))) 8)
+(defmethod chromatic-value ((syllable (eql 'le))) 8)
+(defmethod chromatic-value ((syllable (eql 'la))) 9)
+(defmethod chromatic-value ((syllable (eql 'li))) 10)
+(defmethod chromatic-value ((syllable (eql 'te))) 10)
+(defmethod chromatic-value ((syllable (eql 'ti))) 11)
 
-(defmethod diatonic-value ((mode (eql 'phrygian)))
-  "Return the diatonic value of phrygian."
-  3)
+(defmethod chromatic-offset ((syllable (eql 'do))) 0)
+(defmethod chromatic-offset ((syllable (eql 'di))) 1)
+(defmethod chromatic-offset ((syllable (eql 'ra))) -1)
+(defmethod chromatic-offset ((syllable (eql 're))) 0)
+(defmethod chromatic-offset ((syllable (eql 'ri))) 1)
+(defmethod chromatic-offset ((syllable (eql 'me))) -1)
+(defmethod chromatic-offset ((syllable (eql 'mi))) 0)
+(defmethod chromatic-offset ((syllable (eql 'fa))) 0)
+(defmethod chromatic-offset ((syllable (eql 'fi))) 1)
+(defmethod chromatic-offset ((syllable (eql 'se))) -1)
+(defmethod chromatic-offset ((syllable (eql 'sol))) 0)
+(defmethod chromatic-offset ((syllable (eql 'si))) 1)
+(defmethod chromatic-offset ((syllable (eql 'le))) -1)
+(defmethod chromatic-offset ((syllable (eql 'la))) 0)
+(defmethod chromatic-offset ((syllable (eql 'li))) 1)
+(defmethod chromatic-offset ((syllable (eql 'te))) -1)
+(defmethod chromatic-offset ((syllable (eql 'ti))) 0)
 
-(defmethod diatonic-value ((mode (eql 'lydian)))
-  "Return the diatonic value of lydian."
-  4)
+(defmethod diatonic-value ((mode (eql 'ionian))) 1)
+(defmethod diatonic-value ((mode (eql 'dorian))) 2)
+(defmethod diatonic-value ((mode (eql 'phrygian))) 3)
+(defmethod diatonic-value ((mode (eql 'lydian))) 4)
+(defmethod diatonic-value ((mode (eql 'mixolydian))) 5)
+(defmethod diatonic-value ((mode (eql 'aeolian))) 6)
+(defmethod diatonic-value ((mode (eql 'locrian))) 7)
+(defmethod diatonic-value ((mode (eql 'major))) 1)
+(defmethod diatonic-value ((mode (eql 'minor))) 6)
+(defmethod diatonic-value ((mode (eql 'harmonic-minor))) 6)
+(defmethod diatonic-value ((mode (eql 'melodic-minor))) 6)
 
-(defmethod diatonic-value ((mode (eql 'mixolydian)))
-  "Return the diatonic value of mixolydian."
-  5)
-
-(defmethod diatonic-value ((mode (eql 'aeolian)))
-  "Return the diatonic value of aeolian."
-  6)
-
-(defmethod diatonic-value ((mode (eql 'locrian)))
-  "Return the diatonic value of locrian."
-  7)
-
-(defmethod diatonic-value ((mode (eql 'major)))
-  "Return the diatonic value of major."
-  1)
-
-(defmethod diatonic-value ((mode (eql 'minor)))
-  "Return the diatonic value of minor."
-  6)
-
-(defmethod diatonic-value ((mode (eql 'harmonic-minor)))
-  "Return the diatonic value of harmonic minor."
-  6)
-
-(defmethod diatonic-value ((mode (eql 'melodic-minor)))
-  "Return the diatonic value of melodic minor."
-  6)
-
-(defmethod diatonic-value ((scale-degree (eql 'tonic)))
-  "Return the diatonic value of tonic."
-  1)
-
-(defmethod diatonic-value ((scale-degree (eql 'supertonic)))
-  "Return the diatonic value of supertonic."
-  2)
-
-(defmethod diatonic-value ((scale-degree (eql 'mediant)))
-  "Return the diatonic value of mediant."
-  3)
-
-(defmethod diatonic-value ((scale-degree (eql 'subdominant)))
-  "Return the diatonic value of subdominant."
-  4)
-
-(defmethod diatonic-value ((scale-degree (eql 'dominant)))
-  "Return the diatonic value of dominant."
-  5)
-
-(defmethod diatonic-value ((scale-degree (eql 'submediant)))
-  "Return the diatonic value of submediant."
-  6)
-
-(defmethod diatonic-value ((scale-degree (eql 'subtonic)))
-  "Return the diatonic value of subtonic."
-  7)
-
-(defmethod diatonic-value ((scale-degree (eql 'leading-tone)))
-  "Return the diatonic value of the leading tone."
-  7)
+(defmethod diatonic-value ((scale-degree (eql 'tonic))) 1)
+(defmethod diatonic-value ((scale-degree (eql 'supertonic))) 2)
+(defmethod diatonic-value ((scale-degree (eql 'mediant))) 3)
+(defmethod diatonic-value ((scale-degree (eql 'subdominant))) 4)
+(defmethod diatonic-value ((scale-degree (eql 'dominant))) 5)
+(defmethod diatonic-value ((scale-degree (eql 'submediant))) 6)
+(defmethod diatonic-value ((scale-degree (eql 'subtonic))) 7)
+(defmethod diatonic-value ((scale-degree (eql 'leading-tone))) 7)
 
 (defmethod tonic        ((mode (eql 'ionian))) (interval 'p1))
 (defmethod supertonic   ((mode (eql 'ionian))) (interval 'ma2))
@@ -258,7 +260,7 @@
   (above (tonic key)
 	 (leading-tone (mode key))))
 
-(defmethod scale-degree ((key key) degree)
+(defmethod scale-degree ((key key) (degree integer))
   "Get a scale degree of a key."
   (declare (type (integer 1 7) degree))
   (case degree
@@ -269,6 +271,13 @@
     (5 (dominant key))
     (6 (submediant key))
     (7 (subtonic key))))
+
+(defmethod scale-degree ((key key) (syllable symbol))
+  "Get a scale degree designated by a selfège syllable of a key."
+  (declare (type solfège-syllable syllable))
+  (above (tonic key)
+	 (make-interval (diatonic-value syllable)
+			(chromatic-value syllable))))
 
 (defmethod scale ((key key))
   "Get the scale of a key."

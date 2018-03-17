@@ -82,5 +82,7 @@
 	   scale
 	   parallel
 	   relative
-
+	   solfège-syllable
+	   
+	   do di ra re ri me mi fa fi se sol si le la li te ti
 	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮))

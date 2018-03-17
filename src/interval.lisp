@@ -4,93 +4,29 @@
   "A type of quality of an interval."
   `(member perfect major minor augmented diminished))
 
-(defmethod chromatic-offset ((quality (eql 'perfect)))
-  "Return the chromatic offset of a perfect quality type."
-  0)
+(defmethod chromatic-offset ((quality (eql 'perfect))) 0)
+(defmethod chromatic-offset ((quality (eql 'major))) 0)
+(defmethod chromatic-offset ((quality (eql 'minor))) -1)
+(defmethod chromatic-offset ((quality (eql 'augmented))) 1)
+(defmethod chromatic-offset ((quality (eql 'diminished))) -1)
 
-(defmethod chromatic-offset ((quality (eql 'major)))
-  "Return the chromatic offset of a major quality type."
-  0)
-
-(defmethod chromatic-offset ((quality (eql 'minor)))
-  "Return the chromatic offset of a minor quality type."
-  -1)
-
-(defmethod chromatic-offset ((quality (eql 'augmented)))
-  "Return the chromatic offset of a augmented quality type."
-  1)
-
-(defmethod chromatic-offset ((quality (eql 'diminished)))
-  "Return the chromatic offset of a diminished quality type."
-  -1)
-
-(defmethod quality-type ((quality (eql 'perfect)))
-  "Return a perfect quality type."
-  'perfect)
-
-(defmethod quality-type ((quality (eql 'perf)))
-  "Return a perfect quality type."
-  'perfect)
-
-(defmethod quality-type ((quality (eql 'p)))
-  "Return a perfect quality type."
-  'perfect)
-
-(defmethod quality-type ((quality (eql 'major)))
-  "Return a major quality type."
-  'major)
-
-(defmethod quality-type ((quality (eql 'maj)))
-  "Return a major quality type."
-  'major)
-
-(defmethod quality-type ((quality (eql 'ma)))
-  "Return a major quality type."
-  'major)
-
-(defmethod quality-type ((quality (eql 'mj)))
-  "Return a major quality type."
-  'major)
-
-(defmethod quality-type ((quality (eql 'minor)))
-  "Return a minor quality type."
-  'minor)
-
-(defmethod quality-type ((quality (eql 'min)))
-  "Return a minor quality type."
-  'minor)
-
-(defmethod quality-type ((quality (eql 'mi)))
-  "Return a minor quality type."
-  'minor)
-
-(defmethod quality-type ((quality (eql 'mn)))
-  "Return a minor quality type."
-  'minor)
-
-(defmethod quality-type ((quality (eql 'augmented)))
-  "Return an augmented quality type."
-  'augmented)
-
-(defmethod quality-type ((quality (eql 'aug)))
-  "Return an augmented quality type."
-  'augmented)
-
-(defmethod quality-type ((quality (eql 'a)))
-  "Return an augmented quality type."
-  'augmented)
-
-(defmethod quality-type ((quality (eql 'diminished)))
-  "Return an diminished quality type."
-  'diminished)
-
-(defmethod quality-type ((quality (eql 'dim)))
-  "Return an diminished quality type."
-  'diminished)
-
-(defmethod quality-type ((quality (eql 'd)))
-  "Return an diminished quality type."
-  'diminished)
+(defmethod quality-type ((quality (eql 'perfect))) 'perfect)
+(defmethod quality-type ((quality (eql 'perf))) 'perfect)
+(defmethod quality-type ((quality (eql 'p))) 'perfect)
+(defmethod quality-type ((quality (eql 'major))) 'major)
+(defmethod quality-type ((quality (eql 'maj))) 'major)
+(defmethod quality-type ((quality (eql 'ma))) 'major)
+(defmethod quality-type ((quality (eql 'mj))) 'major)
+(defmethod quality-type ((quality (eql 'minor))) 'minor)
+(defmethod quality-type ((quality (eql 'min))) 'minor)
+(defmethod quality-type ((quality (eql 'mi))) 'minor)
+(defmethod quality-type ((quality (eql 'mn))) 'minor)
+(defmethod quality-type ((quality (eql 'augmented))) 'augmented)
+(defmethod quality-type ((quality (eql 'aug))) 'augmented)
+(defmethod quality-type ((quality (eql 'a))) 'augmented)
+(defmethod quality-type ((quality (eql 'diminished))) 'diminished)
+(defmethod quality-type ((quality (eql 'dim))) 'diminished)
+(defmethod quality-type ((quality (eql 'd))) 'diminished)
 
 (defun print-quality-type (quality stream)
   "Print a shorthand of a quality type to a stream."
