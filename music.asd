@@ -10,4 +10,5 @@
 			 (:file "song")
 			 (:file "interval")
 			 (:file "note")
-			 (:file "scale")))))
+			 (:file "scale")
+			 (:file "harmony")))))

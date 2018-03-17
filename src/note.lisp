@@ -86,6 +86,10 @@
   "Return a pitch class designated by a symbol."
   (pitch-class (string symbol)))
 
+(defmethod pitch-class ((pitch-class pitch-class))
+  "Return a pitch class designated by itself."
+  pitch-class)
+
 (defun make-pitch-class (diatonic-class chromatic-offset)
   "Construct a pitch class from a diatonic class and a chromatic offset."
   (make-instance
@@ -130,6 +134,10 @@
 (defmethod note ((symbol symbol))
   "Return a note designated by a symbol."
   (note (string symbol)))
+
+(defmethod note ((note note))
+  "Return a note designated by itself."
+  note)
 
 (defun make-note (diatonic-value chromatic-value)
   "Construct a note with a diatonic value and a chromatic value."
@@ -216,3 +224,21 @@
   "Return the pitch class an interval below another pitch class."
   (pitch-class (below (make-instance 'note :pitch-class pitch-class)
 		      interval)))
+
+(defmethod note-or-pitch-class ((string string))
+  "Return either a note or a pitch class designated by a string."
+  (if (num-char-p (char string (1- (length string))))
+      (note string)
+      (pitch-class string)))
+
+(defmethod note-or-pitch-class ((symbol symbol))
+  "Return either a note or a pitch class designated by a symbol."
+  (note-or-pitch-class (string symbol)))
+
+(defmethod note-or-pitch-class ((note note))
+  "Return a note designated by itself."
+  note)
+
+(defmethod note-or-pitch-class ((pitch-class pitch-class))
+  "Return a pitch class designated by itself."
+  pitch-class)

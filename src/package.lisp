@@ -6,6 +6,8 @@
 	   diatonic-mod
 	   diatonic-class
 	   chromatic-class
+	   rotate-left
+	   rotate-right
 
 	   defsong
 	   song
@@ -33,6 +35,7 @@
 	   octave-diatonic-offset
 	   above
 	   below
+	   note-or-pitch-class
 
 	   quality-type
 	   perfect perf p
@@ -83,6 +86,11 @@
 	   parallel
 	   relative
 	   solfège-syllable
+
+	   harmony
+	   make-harmony
+	   build-harmony
+	   invert
 	   
 	   do di ra re ri me mi fa fi se sol si le la li te ti
 	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮))

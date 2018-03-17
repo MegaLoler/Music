@@ -69,3 +69,12 @@
 (defmethod diatonic-class ((diatonic-value integer))
   "Return the class of a diatonic value."
   (diatonic-mod diatonic-value 7))
+
+(defun rotate-left (list)
+  "Rotate a list to the left."
+  (append (cdr list) (list (car list))))
+
+(defun rotate-right (list)
+  "Rotate a list to the right."
+  (cons (car (last list))
+	(subseq list 0 (1- (length list)))))

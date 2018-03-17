@@ -221,6 +221,10 @@
   "Return a key designated by a symbol."
   (key (string symbol)))
 
+(defmethod key ((key key))
+  "Return a key designated by itself."
+  key)
+
 (defmethod print-object ((key key) stream)
   "Print a key to a stream."
   (format stream "~A-~A" (tonic key) (mode key)))

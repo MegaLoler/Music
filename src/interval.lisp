@@ -161,6 +161,10 @@
   "Return an interval designated by a symbol."
   (interval (string symbol)))
 
+(defmethod interval ((interval interval))
+  "Return an interval designated by itself."
+  interval)
+
 (defun make-interval (diatonic-value chromatic-value)
   "Construct an interval from a diatonic value and a chromatic value."
   (let* ((natural-chromatic-value (diatonic-to-chromatic-value diatonic-value))
