@@ -3,6 +3,7 @@
 ;; TODO:
 ;;   better note reading (use read-until, and support reading beyond 0-9 ints)
 ;;   read and print Double Sharps and Double Flat signs
+;;   make interval above and below for pitch classes less hacky
 
 (deftype letter-name ()
   "A letter name of a note."
@@ -279,3 +280,13 @@
 	     (- (chromatic-value note)
 		(chromatic-value interval))))
 
+;; this is hacky...
+(defmethod above ((pitch-class pitch-class) (interval interval))
+  "Return the pitch class an interval above another pitch class."
+  (pitch-class (above (make-instance 'note :pitch-class pitch-class)
+		      interval)))
+
+(defmethod below ((pitch-class pitch-class) (interval interval))
+  "Return the pitch class an interval below another pitch class."
+  (pitch-class (below (make-instance 'note :pitch-class pitch-class)
+		      interval)))

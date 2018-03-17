@@ -8,5 +8,6 @@
 			((:file "package")
 			 (:file "util")
 			 (:file "song")
+			 (:file "interval")
 			 (:file "note")
-			 (:file "interval")))))
+			 (:file "scale")))))

@@ -56,4 +56,31 @@
 	   difference
 	   reduce
 
+	   key
+	   mode
+	   scale-degree
+	   tonic
+	   supertonic
+	   mediant
+	   subdominant
+	   dominant
+	   submediant
+	   subtonic
+	   leading-tone
+	   major
+	   minor
+	   harmonic-minor
+	   melodic-minor
+	   ionian
+	   dorian
+	   phrygian
+	   lydian
+	   mixolydian
+	   aeolian
+	   locrian
+	   make-key
+	   scale
+	   parallel
+	   relative
+
 	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮))
