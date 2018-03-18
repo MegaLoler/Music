@@ -78,3 +78,21 @@
   "Rotate a list to the right."
   (cons (car (last list))
 	(subseq list 0 (1- (length list)))))
+
+(defmacro fset (location value)
+  "Perform `setf' but return the old value."
+  `(let* ((old ,location))
+     (setf ,location ,value)
+     old))
+
+(defmacro finc (location value)
+  "Perform `incf' but return the old value."
+  `(let* ((old ,location))
+     (incf ,location ,value)
+     old))
+
+(defmacro fdec (location value)
+  "Perform `decf' but return the old value."
+  `(let* ((old ,location))
+     (decf ,location ,value)
+     old))

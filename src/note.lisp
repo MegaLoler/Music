@@ -263,6 +263,27 @@
      :pitch-class pitch-class
      :octave (+ (octave note) octave-offset))))
 
-(defmethod nearest ((a note) (b note))
-  "Return the note."
-  a)
+(defmethod realize ((note note) &optional (env (default-environment)))
+  "Realize a note from itself in a musical environment."
+  (declare (ignore env))
+  note)
+
+(defmethod realize ((pitch-class pitch-class) &optional (env (default-environment)))
+  "Realize a note from a pitch class in a musical environment."
+  (nearest pitch-class (reference env)))
+
+(defmethod realize ((degree integer) &optional (env (default-environment)))
+  "Realize a note from a scale degree in a musical environment."
+  (realize (scale-degree (key env) degree)))
+
+(defmethod realize ((degree symbol) &optional (env (default-environment)))
+  "Realize a note from a symbol in a musical environment."
+  (realize (if (typep degree '(or solfège-syllable scale-degree))
+	       (scale-degree (key env) degree)
+	       (note-or-pitch-class degree))))
+
+(defmethod realize ((notes list) &optional (env (default-environment)))
+  "Realize multiple notes in a musical environment."
+  (loop
+     :for note :in notes
+     :collect (realize note env)))

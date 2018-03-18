@@ -1,153 +1,62 @@
 (in-package :music)
 
-;; this is just for quick testing??
-;; i'll make a better performance system later
-
-(deftype musical-rest ()
-  "Symbols representing a musical rest."
-  `(member rest r))
-
-(defvar *duration* 1)
-(defvar *velocity* 80)
-(defvar *unaccent* 4/5)
-(defvar *reference* (note 'c4))
-(defvar *key* (key 'c-major))
-
 (defvar *midi-out* nil)
 
 (defun init-midi (&optional (out-id (pm:get-default-output-device-id)))
-  "Initialize midi output with port midi."
+  "Initialize midi output with portmidi."
   (if *midi-out*
-      (error "A midi device is already open!")
+      (error "A midi stream is already open!")
       (setf *midi-out* (pm:open-output out-id 1024 0))))
 
 (defun close-midi ()
-  "Close the open midi connection with port midi."
+  "Close the open midi connection with portmidi."
   (if *midi-out*
       (setf *midi-out* (pm:close-midi *midi-out*))
-      (error "A midi device is not open yet!")))
+      (error "A midi stream is not open yet!")))
 
-(defmethod play
-    ((note note)
-     &optional
-       (time 0)
-       (duration *duration*)
-       (velocity *velocity*)
-       (key *key*)
-       (reference *reference*))
+(defun ensure-midi ()
+  "Make sure a midi stream is available."
+  (unless *midi-out* (init-midi)))
+
+(defun note-on (value &optional (velocity 80) (channel 0) (stream *midi-out*))
+  "Play a midi note."
+  (pm:write-short-midi stream 0 (pm:note-on channel value velocity)))
+
+(defun note-off (value &optional (channel 0) (stream *midi-out*))
+  "Stop a midi note."
+  (pm:write-short-midi stream 0 (pm:note-off channel value 0)))
+
+(defun notes-on (values &optional (velocity 80) (channel 0) (stream *midi-out*))
+  "Play multiple midi notes."
+  (loop :for value :in values :do (note-on value velocity channel stream)))
+
+(defun notes-off (values &optional (channel 0) (stream *midi-out*))
+  "Stop multiple midi notes."
+  (loop :for value :in values :do (note-off value channel stream)))
+
+(defun panic (&optional (channel 0) (stream *midi-out*))
+  "Stop all notes on a channel of a midi stream."
+  (loop :for n :from 0 :to 127 :do (note-off n channel stream)))
+
+(defun schedule (time fn &rest args)
+  "Schedule a function to be called after some amount of seconds."
+  (schedule-timer
+   (make-timer
+    (lambda ()
+      (apply fn args))
+    :thread t)
+   time))
+
+(defun play-note (note &optional (time 0) (duration 1) (velocity 80))
   "Play a note."
-  (declare (ignore key reference))
-  (if *midi-out*
-      (progn
-	(format t "Playing note ~A at time ~A for ~As with velocity ~A.~%"
-		(chromatic-value note) time duration velocity)
-	(schedule-timer
-	 (make-timer
-	  (lambda ()
-	    (pm:write-short-midi *midi-out* 0
-				 (pm:note-on 0
-					     (chromatic-value note)
-					     (floor velocity))))
-	  :thread t)
-	 time)
-	(schedule-timer
-	 (make-timer
-	  (lambda ()
-	    (pm:write-short-midi *midi-out* 0
-				 (pm:note-off 0
-					     (chromatic-value note)
-					     (floor velocity))))
-	  :thread t)
-	 (+ time duration)))
-      (error "Open a midi device first!"))
-  note)
+  (ensure-midi)
+  (let ((value (chromatic-value (note note))))
+    (schedule time #'note-on value velocity)
+    (schedule (+ time duration) #'note-off value)))
 
-(defmethod play
-    ((pitch-class pitch-class)
-     &optional
-       (time 0)
-       (duration *duration*)
-       (velocity *velocity*)
-       (key *key*)
-       (reference *reference*))
-  "Play a pitch class."
-  (play (nearest pitch-class reference)
-	time duration velocity key reference))
-
-(defmethod play
-    ((degree symbol)
-     &optional
-       (time 0)
-       (duration *duration*)
-       (velocity *velocity*)
-       (key *key*)
-       (reference *reference*))
-  "Play a scale degree."
-  (if (typep degree 'musical-rest)
-      reference
-      (play (nearest (resolve degree key) reference)
-	    time duration velocity key reference)))
-
-(defmethod play
-    ((degree integer)
-     &optional
-       (time 0)
-       (duration *duration*)
-       (velocity *velocity*)
-       (key *key*)
-       (reference *reference*))
-  "Play a scale degree."
-  (play (nearest (resolve degree key) reference)
-	time duration velocity key reference))
-
-(defmethod play
-    ((notes list)
-     &optional
-       (time 0)
-       (duration *duration*)
-       (velocity *velocity*)
-       (key *key*)
-       (reference *reference*))
-  "Play a chord."
-  (loop
-     :for note :in notes
-     :do (setf
-	  reference
-	  (play note time duration velocity key reference)))
-  reference)
-
-(defmethod play
-    ((notes vector)
-     &optional
-       (time 0)
-       (duration *duration*)
-       (velocity *velocity*)
-       (key *key*)
-       (reference *reference*))
-  "Play a sequence."
-  (flet ((special (a) (find-if (lambda (b)
-			   (eql a b))
-			 '(< >))))
-  (loop
-     :with len = (count-if (lambda (note)
-			     (not (special note)))
-			   notes)
-     :with dur = (/ duration len)
-     :for tim :from time :by dur
-     :for x :from 1
-     :for accent = (if (= x 1)
-		       1 *unaccent*)
-     :for vel = (* velocity accent)
-     :for note :across notes
-     :do (if (special note)
-	     (progn
-	       (setf tim (- tim dur))
-	       (case note
-		 (> (setf reference
-			  (above reference (interval 'p8))))
-		 (< (setf reference
-			  (below reference (interval 'p8))))))
-	     (setf
-	      reference
-	      (play note tim dur vel key reference))))
-  reference))
+(defun play-notes (notes &optional (time 0) (duration 1) (velocity 80))
+  "Play multiple note."
+  (ensure-midi)
+  (let ((values (mapcar (lambda (note) (chromatic-value (note note))) notes)))
+    (schedule time #'notes-on values velocity)
+    (schedule (+ time duration) #'notes-off values)))

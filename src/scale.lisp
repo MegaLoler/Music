@@ -279,12 +279,14 @@
     (6 (submediant key))
     (7 (subtonic key))))
 
-(defmethod scale-degree ((key key) (syllable symbol))
-  "Get a scale degree designated by a selfège syllable of a key."
-  (declare (type solfège-syllable syllable))
-  (above (tonic key)
-	 (make-interval (diatonic-value syllable)
-			(chromatic-value syllable))))
+(defmethod scale-degree ((key key) (degree symbol))
+  "Get a scale degree designated by a solfège syllable or scale degree name of a key."
+  (declare (type (or solfège-syllable scale-degree) degree))
+  (if (typep degree 'scale-degree)
+      (scale-degree key (diatonic-value degree))
+      (above (tonic key)
+	     (make-interval (diatonic-value degree)
+			    (chromatic-value degree)))))
 
 (defmethod scale ((key key))
   "Get the scale of a key."
@@ -305,21 +307,3 @@
      (diatonic-value (mode key))
      (diatonic-value mode)))
    mode))
-
-(defmethod resolve ((note note) (key key))
-  "Return a pitch class in the context of a key."
-  note)
-
-(defmethod resolve ((pitch-class pitch-class) (key key))
-  "Return a pitch class in the context of a key."
-  pitch-class)
-
-(defmethod resolve ((degree integer) (key key))
-  "Return a pitch class in the context of a key."
-  (scale-degree key degree))
-
-(defmethod resolve ((degree symbol) (key key))
-  "Return a pitch class in the context of a key."
-  (if (typep degree '(or solfège-syllable scale-degree))
-      (scale-degree key degree)
-      (note-or-pitch-class degree)))

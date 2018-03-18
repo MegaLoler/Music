@@ -37,6 +37,7 @@
 	   below
 	   note-or-pitch-class
 	   nearest
+	   realize
 
 	   quality-type
 	   perfect perf p
@@ -87,7 +88,6 @@
 	   parallel
 	   relative
 	   solfège-syllable
-	   resolve
 
 	   harmony
 	   make-harmony
@@ -98,6 +98,33 @@
 	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮ |#| b is es
 
 	   musical-rest rest r
-	   play
+	   play-note
+	   play-notes
+	   note-on
+	   note-off
+	   notes-on
+	   notes-off
+	   panic
+	   schedule
 	   init-midi
-	   close-midi))
+	   close-midi
+	   ensure-midi
+
+	   environment
+	   default-environment
+	   event
+	   container
+	   chord
+	   seq
+	   make-chord
+	   make-seq
+	   tempo
+	   meter
+	   make-tempo
+	   make-meter
+	   realize-duration
+	   duration
+	   on-time
+	   off-time
+	   realize-on-time
+	   realize-off-time))
