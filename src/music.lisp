@@ -94,3 +94,25 @@
    :tempo     (tempo env)
    :meter     (meter env)))
 
+(defmethod event (note value &optional (on-time 0) (env (default-environment)))
+  "Realize an event from a note designator and a value designator in a musical environment."
+  (make-instance
+   'event
+   :note (realize note env)
+   :on-time (+ on-time (realize-on-time value env))
+   :off-time (+ on-time (realize-off-time value env))))
+
+(defmethod event ((notes list) (values list) &optional (on-time 0) (env (default-environment)))
+  "Realize a list of events from a list of note designators and a list of value designators in a musical environment."
+  (loop
+     :for note :in (realize notes env)
+     :for value :in values
+     :for note-on-time :in (realize-on-time values env)
+     :collect (event note value (+ on-time note-on-time))))
+
+(defmethod print-object ((event event) stream)
+  "Print an event object."
+  (format stream "~A@~As-~As"
+	  (note event)
+	  (on-time event)
+	  (off-time event)))
