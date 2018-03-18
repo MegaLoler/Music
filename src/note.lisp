@@ -274,16 +274,19 @@
 
 (defmethod realize ((degree integer) &optional (env (default-environment)))
   "Realize a note from a scale degree in a musical environment."
-  (realize (scale-degree (key env) degree)))
+  (realize (scale-degree (key env) degree) env))
 
 (defmethod realize ((degree symbol) &optional (env (default-environment)))
   "Realize a note from a symbol in a musical environment."
   (realize (if (typep degree '(or solfège-syllable scale-degree))
 	       (scale-degree (key env) degree)
-	       (note-or-pitch-class degree))))
+	       (note-or-pitch-class degree))
+	   env))
 
 (defmethod realize ((notes list) &optional (env (default-environment)))
   "Realize multiple notes in a musical environment."
   (loop
+     :with env = (clone env)
      :for note :in notes
-     :collect (realize note env)))
+     :collect (setf (reference env)
+		    (realize note env))))

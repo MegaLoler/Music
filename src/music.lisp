@@ -83,3 +83,14 @@
 (defun default-environment ()
   "Return a default musical environment."
   (make-instance 'environment))
+
+(defmethod clone ((env environment))
+  "Clone a musical environment."
+  (make-instance
+   'environment
+   :key       (key env)
+   :reference (reference env)
+   :harmony   (harmony env)
+   :tempo     (tempo env)
+   :meter     (meter env)))
+
