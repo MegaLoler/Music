@@ -4,6 +4,8 @@
 ;;   make environments have Parents, and able to shadow each others values
 ;;   possibly also give environments Content.. that or create a musical Packeg object or someting..
 
+(defvar *global-environment* (make-instance 'environment))
+
 (defclass environment ()
   ((key
     :initarg :key
@@ -38,6 +40,11 @@
     :initform (note 'c4)
     :type note
     :accessor note)
+   (velocity
+    :initarg :velocity
+    :initform 80
+    :type velocity
+    :accessor velocity)
    (on-time
     :initarg :on-time
     :initform 0
@@ -82,7 +89,7 @@
 
 (defun default-environment ()
   "Return a default musical environment."
-  (make-instance 'environment))
+  *global-environment*)
 
 (defmethod clone ((env environment))
   "Clone a musical environment."
@@ -94,13 +101,17 @@
    :tempo     (tempo env)
    :meter     (meter env)))
 
-(defmethod event (note value &optional (on-time 0) (env (default-environment)))
+(defmethod event ((note note) value &optional (on-time 0) (env (default-environment)))
   "Realize an event from a note designator and a value designator in a musical environment."
   (make-instance
    'event
-   :note (realize note env)
+   :note note
    :on-time (+ on-time (realize-on-time value env))
    :off-time (+ on-time (realize-off-time value env))))
+
+(defmethod event (note value &optional (on-time 0) (env (default-environment)))
+  "Realize an event from a note designator and a value designator in a musical environment."
+  (event (realize note env) value on-time env))
 
 (defmethod event ((notes list) (values list) &optional (on-time 0) (env (default-environment)))
   "Realize a list of events from a list of note designators and a list of value designators in a musical environment."
@@ -109,6 +120,27 @@
      :for value :in values
      :for note-on-time :in (realize-on-time values env)
      :collect (event note value (+ on-time note-on-time))))
+
+(defmethod event ((seq seq) value &optional (on-time 0) (env (default-environment)))
+  "Realize a list of events from a sequence and a value designator in a musical environment."
+  (event (objects seq)
+	 (make-list (length (objects seq))
+		    :initial-element value)
+	 on-time env))
+
+(defmethod event ((seq seq) (values list) &optional (on-time 0) (env (default-environment)))
+  "Realize a list of events from a sequence and a single or a list of value designators in a music environment."
+  (event (objects seq) values on-time env))
+
+(defmethod event ((notes list) value &optional (on-time 0) (env (default-environment)))
+  "Realize a list of events from a list of note designators and a value designator in a music environment."
+  (loop
+     :for note :in (realize notes env)
+     :collect (event note value on-time env)))
+
+(defmethod event ((chord chord) value &optional (on-time 0) (env (default-environment)))
+  "Realize a list of events from a chord and a value designator in a musical environment."
+  (event (objects chord) value on-time env))
 
 (defmethod print-object ((event event) stream)
   "Print an event object."

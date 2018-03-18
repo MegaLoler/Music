@@ -1,5 +1,9 @@
 (in-package :music)
 
+;; todo:
+;;   optimize the play methods for Lists so they use play-noteS instead of lots of play-note
+;;     you know, since the scheduling is relative and running fewer timers would be a lot better for synchronization -- mainly just check and see if its a list of Events, and in that case, put them in parallel, and else just do Play Notes
+
 (defvar *midi-out* nil)
 
 (defun init-midi (&optional (out-id (pm:get-default-output-device-id)))
@@ -62,3 +66,36 @@
 	(off-time (or off-time (+ on-time 1))))
     (schedule on-time #'notes-on values velocity)
     (schedule off-time #'notes-off values)))
+
+(defmethod play ((event event))
+  "Play an event."
+  (play-note (note event)
+	     (on-time event)
+	     (off-time event)
+	     (velocity event)))
+
+(defmethod play ((note note))
+  "Play a note."
+  (play-note note))
+
+(defmethod play ((interval interval))
+  "Play an interval."
+  (let ((reference (reference (default-environment))))
+    (play-notes (list reference
+		      (above reference interval)))))
+
+(defmethod play (object)
+  "Play a realizable object."
+  (play (realize object)))
+
+(defmethod play ((chord chord))
+  "Play a chord."
+  (play (event chord 1)))
+
+(defmethod play ((seq seq))
+  "Play a sequence."
+  (play (event seq 1)))
+
+(defmethod play ((list list))
+  "Play a list of objects."
+  (mapc #'play list))

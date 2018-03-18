@@ -109,6 +109,7 @@
 	   init-midi
 	   close-midi
 	   ensure-midi
+	   play
 
 	   environment
 	   default-environment

@@ -283,6 +283,8 @@
 	       (note-or-pitch-class degree))
 	   env))
 
+;; include octave displacement indicators (< and >) and rests:
+
 (defmethod realize ((notes list) &optional (env (default-environment)))
   "Realize multiple notes in a musical environment."
   (loop
