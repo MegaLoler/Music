@@ -2,6 +2,7 @@
   :description "Playin with music stuff!"
   :author "MegaLoler"
   :serial t
+  :depends-on (#:portmidi)
   :components ((:module "src"
 			:serial t
 			:components

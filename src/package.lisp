@@ -1,5 +1,5 @@
 (defpackage :music
-  (:use :cl)
+  (:use :cl :sb-ext) ;; being sbcl dependant rn
   (:export diatonic-to-chromatic-value
 	   add-diatonic-values
 	   subtract-diatonic-values
@@ -98,4 +98,6 @@
 	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮ |#| b is es
 
 	   musical-rest rest r
-	   play))
+	   play
+	   init-midi
+	   close-midi))

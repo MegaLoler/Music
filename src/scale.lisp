@@ -1,5 +1,8 @@
 (in-package :music)
 
+;; todo:
+;;   able to read keys as major if their designators dont specify a mode
+
 (deftype scale-degree ()
   `(member tonic supertonic mediant subdominant dominant submediant subtonic leading-tone))
 
