@@ -47,16 +47,18 @@
     :thread t)
    time))
 
-(defun play-note (note &optional (time 0) (duration 1) (velocity 80))
+(defun play-note (note &optional (on-time 0) off-time (velocity 80))
   "Play a note."
   (ensure-midi)
-  (let ((value (chromatic-value (note note))))
-    (schedule time #'note-on value velocity)
-    (schedule (+ time duration) #'note-off value)))
+  (let ((value (chromatic-value (note note)))
+	(off-time (or off-time (+ on-time 1))))
+    (schedule on-time #'note-on value velocity)
+    (schedule off-time #'note-off value)))
 
-(defun play-notes (notes &optional (time 0) (duration 1) (velocity 80))
-  "Play multiple note."
+(defun play-notes (notes &optional (on-time 0) off-time (velocity 80))
+  "Play multiple notes."
   (ensure-midi)
-  (let ((values (mapcar (lambda (note) (chromatic-value (note note))) notes)))
-    (schedule time #'notes-on values velocity)
-    (schedule (+ time duration) #'notes-off values)))
+  (let ((values (mapcar (lambda (note) (chromatic-value (note note))) notes))
+	(off-time (or off-time (+ on-time 1))))
+    (schedule on-time #'notes-on values velocity)
+    (schedule off-time #'notes-off values)))
