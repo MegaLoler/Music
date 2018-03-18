@@ -82,3 +82,7 @@
      :with time = 0
      :for value :in values
      :collect (incf time (duration value env))))
+
+(defun sum-beat-values (values)
+  "Return the total beat value of a list of beat values."
+  (/ 1 (apply #'+ (mapcar (lambda (value) (/ 1 value)) values))))

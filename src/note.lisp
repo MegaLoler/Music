@@ -290,5 +290,9 @@
   (loop
      :with env = (clone env)
      :for note :in notes
-     :collect (setf (reference env)
-		    (realize note env))))
+     :for realization = (realize note env)
+     :do (setf (reference env)
+	       (if (listp realization)
+		   (car (last realization))
+		   realization))
+     :collect realization))

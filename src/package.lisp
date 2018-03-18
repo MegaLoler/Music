@@ -119,6 +119,7 @@
 	   seq
 	   make-chord
 	   make-seq
+	   v h
 	   tempo
 	   meter
 	   make-tempo
@@ -128,4 +129,5 @@
 	   on-time
 	   off-time
 	   realize-on-time
-	   realize-off-time))
+	   realize-off-time
+	   sum-beat-values))
