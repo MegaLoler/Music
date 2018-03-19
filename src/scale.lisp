@@ -295,6 +295,12 @@
      :for degree :from 1 :to 7
      :collect (scale-degree key degree)))
 
+(defmethod full-scale ((key key))
+  "Get the full up and down scale of a key."
+  (append (scale key)
+	  (list (tonic key))
+	  (reverse (scale key))))
+
 (defmethod parallel ((key key) mode)
   "Get a parallel key of a key with a mode."
   (make-key (tonic key) mode))

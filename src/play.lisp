@@ -3,6 +3,7 @@
 ;; todo:
 ;;   optimize the play methods for Lists so they use play-noteS instead of lots of play-note
 ;;     you know, since the scheduling is relative and running fewer timers would be a lot better for synchronization -- mainly just check and see if its a list of Events, and in that case, put them in parallel, and else just do Play Notes
+;;   cap velocities so they dont exceed the bounds
 
 (defvar *midi-out* nil)
 

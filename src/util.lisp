@@ -96,3 +96,7 @@
   `(let* ((old ,location))
      (decf ,location ,value)
      old))
+
+(defun reciprocal (value)
+  "Return the reciprocal of a value."
+  (/ 1 value))

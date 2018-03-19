@@ -85,6 +85,7 @@
 	   locrian
 	   make-key
 	   scale
+	   full-scale
 	   parallel
 	   relative
 	   solfège-syllable
@@ -117,8 +118,6 @@
 	   container
 	   chord
 	   seq
-	   make-chord
-	   make-seq
 	   v h
 	   tempo
 	   meter

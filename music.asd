@@ -15,4 +15,5 @@
 			 (:file "harmony")
 			 (:file "rhythm")
 			 (:file "music")
- (:file "play")))))
+			 (:file "event")
+			 (:file "play")))))

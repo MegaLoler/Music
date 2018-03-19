@@ -42,46 +42,102 @@
    :beats-per-measure beats-per-measure
    :beat-value beat-value))
 
-(defmethod realize-duration ((value real) &optional (env (default-environment)))
+(defmethod realize-duration
+    ((value real)
+     &optional
+       (on-time 0)
+       off-time
+       (env (default-environment)))
   "Realize a note duration from a beat value in a musical environment."
-  (* 60 (/ (/ 1 value) (bpm (tempo env)))))
+  (if off-time
+      (- off-time on-time)
+      (* 60 (/ (/ 1 value) (bpm (tempo env))))))
 
-(defmethod realize-duration ((values list) &optional (env (default-environment)))
+(defmethod realize-duration
+    ((values list)
+     &optional
+       (on-time 0)
+       off-time
+       (env (default-environment)))
   "Realize multiple note durations in a musical environment."
-  (loop
-     :for value :in values
-     :collect (realize-duration value env)))
+  (if off-time
+      (let* ((relative-lengths (mapcar #'reciprocal values))
+	     (total (reduce #'+ relative-lengths))
+	     (lengths (mapcar (lambda (length)
+				(* (/ length total)
+				   (- off-time on-time)))
+			      relative-lengths)))
+	lengths)
+      (loop
+	 :for value :in values
+	 :collect (realize-duration value on-time off-time env))))
 
-(defmethod duration ((value real) &optional (env (default-environment)))
+(defmethod duration
+    ((value real)
+     &optional
+       (on-time 0)
+       off-time
+       (env (default-environment)))
   "Return the duration of a beat value in a musical environment."
-  (realize-duration value env))
+  (realize-duration value on-time off-time env))
 
-(defmethod duration ((values list) &optional (env (default-environment)))
+(defmethod duration
+    ((values list)
+     &optional
+       (on-time 0)
+       off-time
+       (env (default-environment)))
   "Return the total duration of a list of beat values in a musical environment."
-  (reduce #'+ (realize-duration values env)))
+  (if off-time
+      (- off-time on-time)
+      (reduce #'+ (realize-duration values on-time off-time env))))
 
-(defmethod realize-on-time ((value real) &optional (env (default-environment)))
+(defmethod realize-on-time
+    ((value real)
+     &optional
+       (on-time 0)
+       off-time
+       (env (default-environment)))
   "Realize a relative on-time from a beat value in a musical environment."
-  (declare (ignore env))
-  0)
+  (declare (ignore off-time env))
+  on-time)
 
-(defmethod realize-off-time ((value real) &optional (env (default-environment)))
+(defmethod realize-off-time
+    ((value real)
+     &optional
+       (on-time 0)
+       off-time
+       (env (default-environment)))
   "Realize a relative off-time from a beat value in a musical environment."
-  (duration value env))
+  (+ on-time (duration value on-time off-time env)))
 
-(defmethod realize-on-time ((values list) &optional (env (default-environment)))
+(defmethod realize-on-time
+    ((values list)
+     &optional
+       (on-time 0)
+       off-time
+       (env (default-environment)))
   "Return the relative on-times from a list of beat values in a musical environment."
   (loop
-     :with time = 0
+     :with time = on-time
+     :with durations = (realize-duration values on-time off-time env)
      :for value :in values
-     :collect (finc time (duration value env))))
+     :for duration :in durations
+     :collect (finc time duration)))
 
-(defmethod realize-off-time ((values list) &optional (env (default-environment)))
+(defmethod realize-off-time
+    ((values list)
+     &optional
+       (on-time 0)
+       off-time
+       (env (default-environment)))
   "Return the relative off-times from a list of beat values in a musical environment."
   (loop
-     :with time = 0
+     :with time = on-time
+     :with durations = (realize-duration values on-time off-time env)
      :for value :in values
-     :collect (incf time (duration value env))))
+     :for duration :in durations
+     :collect (incf time duration)))
 
 (defun sum-beat-values (values)
   "Return the total beat value of a list of beat values."
