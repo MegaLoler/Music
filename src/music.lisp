@@ -57,6 +57,14 @@
     :accessor beats))
   (:documentation "A horizontal sequence of musical objects."))
 
+(defmethod print-object ((chord chord) stream)
+  "Print a chord."
+  (prin1 `(chord (list ,@(objects chord))) stream))
+
+(defmethod print-object ((seq seq) stream)
+  "Print a sequence."
+  (prin1 `(seq (list ,@(objects seq))) stream))
+
 (defun chord (objects &optional accents)
   "Make a chord from a list of musical objects."
   (make-instance
@@ -100,23 +108,44 @@
   "Return the relevant reference note from a list of notes."
   (reference (car (last list))))
 
+(defmethod reference ((chord chord))
+  "Return the relevant reference note from a chord of notes."
+  (reference (objects chord)))
+
+(defmethod reference ((seq seq))
+  "Return the relevant reference note from a sequence of notes."
+  (reference (objects seq)))
+
 (defmethod reference ((note note))
   "Return a note as its own reference."
   note)
 
+(defmethod realize ((chord chord) &optional (env (default-environment)))
+  "Realize a chord in a musical environment."
+  (chord (realize (objects chord) env)
+	 (accents chord)))
+
+(defmethod realize ((seq seq) &optional (env (default-environment)))
+  "Realize a musical sequence in a musical environment."
+  (seq (realize (objects seq) env)
+       (beats seq)
+       (accents seq)))
+
 (defmethod cat ((seq seq) &rest rest)
   "Concatenate musical sequences."
   (if rest
-      (cat (seq (append (objects seq) (objects (car rest)))
-		(append (beats seq) (beats (car rest)))
-		(append (accents seq) (accents (car rest))))
-	   (cdr rest))
+      (apply #'cat
+	     (cons (seq (append (objects seq) (objects (car rest)))
+			(append (beats seq) (beats (car rest)))
+			(append (accents seq) (accents (car rest))))
+		   (cdr rest)))
       seq))
 
 (defmethod cat ((chord chord) &rest rest)
   "Concatenate musical chords."
   (if rest
-      (cat (chord (append (objects chord) (objects (car rest)))
-		  (append (accents chord) (accents (car rest))))
-	   (cdr rest))
+      (apply #'cat
+	     (cat (chord (append (objects chord) (objects (car rest)))
+			 (append (accents chord) (accents (car rest))))
+		  (cdr rest)))
       chord))

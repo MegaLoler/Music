@@ -291,8 +291,5 @@
      :with env = (clone env)
      :for note :in notes
      :for realization = (realize note env)
-     :do (setf (reference env)
-	       (if (listp realization)
-		   (car (last realization))
-		   realization))
+     :do (setf (reference env) (reference realization))
      :collect realization))

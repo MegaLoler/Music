@@ -91,7 +91,7 @@
        (env (default-environment)))
   "Return a list of events."
   (loop
-     :for note :in notes
+     :for note :in (realize notes env)
      :collect (event note on-time off-time velocity env)))
 
 (defmethod event
@@ -103,7 +103,7 @@
        (env (default-environment)))
   "Return events for the notes of a chord."
   (loop
-     :for note :in (objects chord)
+     :for note :in (objects (realize chord env))
      :for accent :in (accents chord)
      :collect (event note
 		     on-time
@@ -120,8 +120,7 @@
        (env (default-environment)))
   "Return events for the notes of a sequence."
   (loop
-     :with env = (clone env)
-     :for note :in (objects seq)
+     :for note :in (objects (realize seq env))
      :for beats :in (beats seq)
      :for accent :in (accents seq)
      :for note-on-time :in (realize-on-time (beats seq) on-time off-time env)
@@ -131,5 +130,4 @@
 			 note-off-time
 			 (* accent velocity)
 			 env)
-     :do (setf (reference env) (reference event))
      :collect event))
