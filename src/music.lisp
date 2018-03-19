@@ -3,6 +3,7 @@
 ;; TODO
 ;;   make environments have Parents, and able to shadow each others values
 ;;   possibly also give environments Content.. that or create a musical Closure object or someting..
+;;   make a small accent dsl with X and * and > and < and buncha symbols for indicating accent levels
 
 (defclass environment ()
   ((key
@@ -102,3 +103,20 @@
 (defmethod reference ((note note))
   "Return a note as its own reference."
   note)
+
+(defmethod cat ((seq seq) &rest rest)
+  "Concatenate musical sequences."
+  (if rest
+      (cat (seq (append (objects seq) (objects (car rest)))
+		(append (beats seq) (beats (car rest)))
+		(append (accents seq) (accents (car rest))))
+	   (cdr rest))
+      seq))
+
+(defmethod cat ((chord chord) &rest rest)
+  "Concatenate musical chords."
+  (if rest
+      (cat (chord (append (objects chord) (objects (car rest)))
+		  (append (accents chord) (accents (car rest))))
+	   (cdr rest))
+      chord))

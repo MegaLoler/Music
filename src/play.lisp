@@ -75,27 +75,9 @@
 	     (off-time event)
 	     (velocity event)))
 
-(defmethod play ((note note))
-  "Play a note."
-  (play-note note))
-
-(defmethod play ((interval interval))
-  "Play an interval."
-  (let ((reference (reference (default-environment))))
-    (play-notes (list reference
-		      (above reference interval)))))
-
 (defmethod play (object)
-  "Play a realizable object."
-  (play (realize object)))
-
-(defmethod play ((chord chord))
-  "Play a chord."
-  (play (event chord 1)))
-
-(defmethod play ((seq seq))
-  "Play a sequence."
-  (play (event seq 1)))
+  "Play a an object."
+  (play (event object)))
 
 (defmethod play ((list list))
   "Play a list of objects."
