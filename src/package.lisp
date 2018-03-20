@@ -94,8 +94,9 @@
 	   make-harmony
 	   build-harmony
 	   invert
-	   
-	   do di ra re ri me mi fa fi se sol si le la li te ti
+
+	   i ii iii iv v vi vii
+	   do di ra re ri me mi fa fi se sol so si le la li te ti
 	   a b c d e f g ♯ 𝄪 ♭ 𝄫 ♮ |#| b is es
 
 	   musical-rest rest r

@@ -3,13 +3,15 @@
 ;; todo:
 ;;   able to read keys as major if their designators dont specify a mode
 ;;   invert scale degrees in the context of a key
-;;   add "so" as alternative for "sol"
 
 (deftype scale-degree ()
   `(member tonic supertonic mediant subdominant dominant submediant subtonic leading-tone))
 
+(deftype roman-numeral ()
+  `(member i ii iii iv v vi vii))
+
 (deftype solfège-syllable ()
-  `(member do di ra re ri me mi fa fi se sol si le la li te ti))
+  `(member do di ra re ri me mi fa fi se sol so si le la li te ti))
 
 (deftype mode ()
   `(member major minor harmonic-minor melodic-minor ionian dorian phrygian lydian mixolydian aeolian locrian))
@@ -37,6 +39,7 @@
 (defmethod diatonic-value ((syllable (eql 'fi))) 4)
 (defmethod diatonic-value ((syllable (eql 'se))) 5)
 (defmethod diatonic-value ((syllable (eql 'sol))) 5)
+(defmethod diatonic-value ((syllable (eql 'so))) 5)
 (defmethod diatonic-value ((syllable (eql 'si))) 5)
 (defmethod diatonic-value ((syllable (eql 'le))) 6)
 (defmethod diatonic-value ((syllable (eql 'la))) 6)
@@ -55,6 +58,7 @@
 (defmethod chromatic-value ((syllable (eql 'fi))) 6)
 (defmethod chromatic-value ((syllable (eql 'se))) 6)
 (defmethod chromatic-value ((syllable (eql 'sol))) 7)
+(defmethod chromatic-value ((syllable (eql 'so))) 7)
 (defmethod chromatic-value ((syllable (eql 'si))) 8)
 (defmethod chromatic-value ((syllable (eql 'le))) 8)
 (defmethod chromatic-value ((syllable (eql 'la))) 9)
@@ -73,12 +77,29 @@
 (defmethod chromatic-offset ((syllable (eql 'fi))) 1)
 (defmethod chromatic-offset ((syllable (eql 'se))) -1)
 (defmethod chromatic-offset ((syllable (eql 'sol))) 0)
+(defmethod chromatic-offset ((syllable (eql 'so))) 0)
 (defmethod chromatic-offset ((syllable (eql 'si))) 1)
 (defmethod chromatic-offset ((syllable (eql 'le))) -1)
 (defmethod chromatic-offset ((syllable (eql 'la))) 0)
 (defmethod chromatic-offset ((syllable (eql 'li))) 1)
 (defmethod chromatic-offset ((syllable (eql 'te))) -1)
 (defmethod chromatic-offset ((syllable (eql 'ti))) 0)
+
+(defmethod diatonic-value ((mode (eql 'i))) 1)
+(defmethod diatonic-value ((mode (eql 'ii))) 2)
+(defmethod diatonic-value ((mode (eql 'iii))) 3)
+(defmethod diatonic-value ((mode (eql 'iv))) 4)
+(defmethod diatonic-value ((mode (eql 'v))) 5)
+(defmethod diatonic-value ((mode (eql 'vi))) 6)
+(defmethod diatonic-value ((mode (eql 'vii))) 7)
+
+(defmethod chromatic-value ((mode (eql 'i))) 0)
+(defmethod chromatic-value ((mode (eql 'ii))) 2)
+(defmethod chromatic-value ((mode (eql 'iii))) 4)
+(defmethod chromatic-value ((mode (eql 'iv))) 5)
+(defmethod chromatic-value ((mode (eql 'v))) 7)
+(defmethod chromatic-value ((mode (eql 'vi))) 9)
+(defmethod chromatic-value ((mode (eql 'vii))) 11)
 
 (defmethod diatonic-value ((mode (eql 'ionian))) 1)
 (defmethod diatonic-value ((mode (eql 'dorian))) 2)
@@ -282,13 +303,18 @@
     (7 (subtonic key))))
 
 (defmethod scale-degree ((key key) (degree symbol))
-  "Get a scale degree designated by a solfège syllable or scale degree name of a key."
-  (declare (type (or solfège-syllable scale-degree) degree))
-  (if (typep degree 'scale-degree)
-      (scale-degree key (diatonic-value degree))
-      (above (tonic key)
-	     (make-interval (diatonic-value degree)
-			    (chromatic-value degree)))))
+  "Get a scale degree designated by a solfège syllable or scale degree name of a key or just realize a pitch class designator."
+  (cond ((typep degree '(or scale-degree roman-numeral))
+	 (scale-degree key (diatonic-value degree)))
+	((typep degree 'solfège-syllable)
+	 (above (tonic key)
+		(make-interval (diatonic-value degree)
+			       (chromatic-value degree))))
+	(t (pitch-class degree))))
+
+(defmethod scale-degree ((key key) (pitch-class pitch-class))
+  "Get a pitch class."
+  pitch-class)
 
 (defmethod scale ((key key))
   "Get the scale of a key."

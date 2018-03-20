@@ -288,7 +288,7 @@
   "Realize a note from a symbol in a musical environment."
   (if (typep degree 'musical-rest)
       degree
-      (realize (if (typep degree '(or solfège-syllable scale-degree))
+      (realize (if (typep degree '(or solfège-syllable scale-degree roman-numeral))
 		   (scale-degree (key env) degree)
 		   (note-or-pitch-class degree))
 	       env)))
