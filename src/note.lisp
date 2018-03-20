@@ -10,6 +10,10 @@
   "Indicates a musical rest."
   `(member rest r))
 
+(defun musical-rest-p (object)
+  "Whether something is a musical rest."
+  (typep object 'musical-rest))
+
 (deftype letter-name ()
   "A letter name of a note."
   `(member a b c d e f g))
@@ -288,8 +292,6 @@
 		   (scale-degree (key env) degree)
 		   (note-or-pitch-class degree))
 	       env)))
-
-;; include octave displacement indicators (< and >) and rests:
 
 (defmethod realize ((notes list) &optional (env (default-environment)))
   "Realize multiple notes in a musical environment."

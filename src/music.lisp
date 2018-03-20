@@ -106,7 +106,7 @@
 
 (defmethod reference ((list list))
   "Return the relevant reference note from a list of notes."
-  (reference (car (last list))))
+  (reference (car (last (remove-if #'musical-rest-p list)))))
 
 (defmethod reference ((chord chord))
   "Return the relevant reference note from a chord of notes."
