@@ -96,6 +96,7 @@
 	   make-harmony
 	   build-harmony
 	   invert
+	   intervals
 
 	   i ii iii iv v vi vii
 	   do di ra re ri me mi fa fi se sol so si le la li te ti
@@ -134,4 +135,13 @@
 	   realize-off-time
 	   sum-beat-values
 	   cat
-	   concat))
+	   concat
+
+	   major minor augmented diminished
+	   dominant major minor-major minor augmented-major augmented half-diminished diminished
+	   major dominant minor-major minor augmented-major augmented half-diminished half-diminished-minor diminished minor-diminished
+	   dominant major minor major minor augmented-major augmented half-diminished diminished
+	   major dominant minor-major minor augmented-major augmented half-diminished
+	   maj ma mj j Δ min mi mn − - aug au ag a + dim di dm d o ° dom half-dim half-di half-dm half-d h-dim h-di h-dm h-d hdim hdi hdm hd min-maj mi-ma mn-mj mn-j m-m m-j minmaj mima mnmj mnj mj mm aug-maj au-ma ag-j ag-j a-m a-j augmaj auma agmj agj am aj
+	   sus2 sus4
+	   add2 add4 add9 add11 add13))

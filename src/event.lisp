@@ -129,11 +129,15 @@
        (env (default-environment)))
   "Return events for the notes of a sequence."
   (loop
+     :with seq-beats = (if (listp (beats seq))
+			(beats seq)
+			(make-list (length (objects seq))
+				   :initial-element (beats seq)))
      :for note :in (objects (realize seq env))
-     :for beats :in (beats seq)
+     :for beats :in seq-beats
      :for accent :in (accents seq)
-     :for note-on-time :in (realize-on-time (beats seq) on-time off-time env)
-     :for note-off-time :in (realize-off-time (beats seq) on-time off-time env)
+     :for note-on-time :in (realize-on-time seq-beats on-time off-time env)
+     :for note-off-time :in (realize-off-time seq-beats on-time off-time env)
      :for event = (event note
 			 note-on-time
 			 note-off-time

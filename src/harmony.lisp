@@ -5,13 +5,16 @@
 ;;   give make-harmony ability to Alter members of the harmony!
 ;;   make build-harmony into a fancy macro that can take notes and/or intervals arbitrarily and stack them
 ;;   remake the harmony notation reader... use logic instead of hardcoding values!!
+;;   make tertiary and beyond harmony notation work!!! those / / /  at the end
+;;   fix reading letter names with accidentals in them...
+;;   FIX SUSPENSIONS ><
 
 (defmethod intervals ((q (eql 'major)) ext)                      '(ma3 p5))
 (defmethod intervals ((q (eql 'minor)) ext)                      '(mi3 p5))
 (defmethod intervals ((q (eql 'augmented)) ext)                  '(ma3 aug5))
 (defmethod intervals ((q (eql 'diminished)) ext)                 '(mi3 dim5))
 
-(defmethod intervals ((q (eql 'dominant)) (ext (eql 7)))         '(ma3 p5 mi7))
+(defmethod intervals ((q (eql 'dominant)) ext)                   '(ma3 p5 mi7))
 (defmethod intervals ((q (eql 'major)) (ext (eql 7)))            '(ma3 p5 ma7))
 (defmethod intervals ((q (eql 'minor-major)) ext)                '(mi3 p5 ma7))
 (defmethod intervals ((q (eql 'minor)) (ext (eql 7)))            '(mi3 p5 mi7))
@@ -47,12 +50,6 @@
 (defmethod intervals ((q (eql 'augmented-major)) (ext (eql 13))) '(ma3 aug5 ma7 ma9 p11 ma13))
 (defmethod intervals ((q (eql 'augmented)) (ext (eql 13)))       '(ma3 aug5 mi7 ma9 p11 ma13))
 (defmethod intervals ((q (eql 'half-diminished)) (ext (eql 13))) '(mi3 dim5 mi7 ma9 p11 ma13))
-
-(defmethod intervals (q ext)            (intervals 'major ext))
-(defmethod intervals (q (ext (eql 7)))  (intervals 'dominant ext))
-(defmethod intervals (q (ext (eql 9)))  (intervals 'major ext))
-(defmethod intervals (q (ext (eql 11))) (intervals 'dominant ext))
-(defmethod intervals (q (ext (eql 11))) (intervals 'dominant ext))
 
 (defmethod intervals ((q (eql 'maj)) ext) (intervals 'major ext))
 (defmethod intervals ((q (eql 'ma)) ext) (intervals 'major ext))
@@ -112,6 +109,12 @@
 (defmethod intervals ((q (eql 'agj)) ext) (intervals 'augmented-major ext))
 (defmethod intervals ((q (eql 'am)) ext) (intervals 'augmented-major ext))
 (defmethod intervals ((q (eql 'aj)) ext) (intervals 'augmented-major ext))
+
+(defmethod intervals (q ext)            (intervals 'major ext))
+(defmethod intervals (q (ext (eql 7)))  (intervals 'dominant ext))
+(defmethod intervals (q (ext (eql 9)))  (intervals 'major ext))
+(defmethod intervals (q (ext (eql 11))) (intervals 'dominant ext))
+(defmethod intervals (q (ext (eql 11))) (intervals 'dominant ext))
 
 (defmethod extension ((inversion (eql 53)))  5)
 (defmethod extension ((inversion (eql 63)))  5)
@@ -184,6 +187,7 @@
        suspension)
   "Return a set of pitch classes of a harmony built from the scale of a key."
   (declare (type (member nil 2 4) suspension))
+  (print suspension)
   (invert (loop
 	     :with key = (key key)
 	     :with root-degree = (degree key root)
@@ -191,13 +195,23 @@
 	     :for alteration :in (or alterations
 				     (make-list members :initial-element 0))
 	     :for n :from 1
-	     :for mod = (diatonic-class (if (and suspension (= n 2))
-					    (+ (add-diatonic-values
-						root-degree
-						(diatonic-class suspension)))
-					    degree))
-	     :repeat members
-	     :collect (above (scale-degree key mod)
+	     :for mod = (diatonic-class degree)
+	     :for interval :in (if quality
+				   (append (list 'p1)
+					   (intervals quality (1- (* 2 members))))
+				   (make-list members :initial-element nil))
+	     :collect (above (if interval
+				 (above (scale-degree key (if (and suspension (= n 2))
+							      (+ (add-diatonic-values
+								  root-degree
+								  (diatonic-class suspension)))
+							      root-degree))
+					(interval interval))
+				 (scale-degree key (if (and suspension (= n 2))
+						       (+ (add-diatonic-values
+							   root-degree
+							   (diatonic-class suspension)))
+						       mod)))
 			     (make-interval 1 (+ offset alteration)))
 	     :into result
 	     :finally (return
@@ -294,7 +308,7 @@
       	   (additions (additions (symbol-from-char added nil))))
       (make-harmony :key (key env)
       		    :root root
-      		    :quality quality
+      		    :quality (or quality (> (length inversion-extension) 0))
       		    :inversion inversion
       		    :members members
       		    :offset accidental
