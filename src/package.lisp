@@ -89,6 +89,8 @@
 	   parallel
 	   relative
 	   solfège-syllable
+	   secondary
+	   degree
 
 	   harmony
 	   make-harmony

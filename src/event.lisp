@@ -93,11 +93,11 @@
   "Return a list of events."
   (loop
      :for note :in (realize notes env)
-     :for on :in (if (listp on-time)
+     :for on :in (if (consp on-time)
 		     on-time
 		     (make-list (length notes)
 				:initial-element on-time))
-     :for off :in (if (listp off-time)
+     :for off :in (if (consp off-time)
 		      off-time
 		      (make-list (length notes)
 				 :initial-element off-time))

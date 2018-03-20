@@ -28,6 +28,25 @@
     (6 'aeolian)
     (7 'locrian)))
 
+(defmethod diatonic-class ((syllable (eql 'do))) 1)
+(defmethod diatonic-class ((syllable (eql 'di))) 1)
+(defmethod diatonic-class ((syllable (eql 'ra))) 2)
+(defmethod diatonic-class ((syllable (eql 're))) 2)
+(defmethod diatonic-class ((syllable (eql 'ri))) 2)
+(defmethod diatonic-class ((syllable (eql 'me))) 3)
+(defmethod diatonic-class ((syllable (eql 'mi))) 3)
+(defmethod diatonic-class ((syllable (eql 'fa))) 4)
+(defmethod diatonic-class ((syllable (eql 'fi))) 4)
+(defmethod diatonic-class ((syllable (eql 'se))) 5)
+(defmethod diatonic-class ((syllable (eql 'sol))) 5)
+(defmethod diatonic-class ((syllable (eql 'so))) 5)
+(defmethod diatonic-class ((syllable (eql 'si))) 5)
+(defmethod diatonic-class ((syllable (eql 'le))) 6)
+(defmethod diatonic-class ((syllable (eql 'la))) 6)
+(defmethod diatonic-class ((syllable (eql 'li))) 6)
+(defmethod diatonic-class ((syllable (eql 'te))) 7)
+(defmethod diatonic-class ((syllable (eql 'ti))) 7)
+
 (defmethod diatonic-value ((syllable (eql 'do))) 1)
 (defmethod diatonic-value ((syllable (eql 'di))) 1)
 (defmethod diatonic-value ((syllable (eql 'ra))) 2)
@@ -93,6 +112,14 @@
 (defmethod diatonic-value ((mode (eql 'vi))) 6)
 (defmethod diatonic-value ((mode (eql 'vii))) 7)
 
+(defmethod diatonic-class ((mode (eql 'i))) 1)
+(defmethod diatonic-class ((mode (eql 'ii))) 2)
+(defmethod diatonic-class ((mode (eql 'iii))) 3)
+(defmethod diatonic-class ((mode (eql 'iv))) 4)
+(defmethod diatonic-class ((mode (eql 'v))) 5)
+(defmethod diatonic-class ((mode (eql 'vi))) 6)
+(defmethod diatonic-class ((mode (eql 'vii))) 7)
+
 (defmethod chromatic-value ((mode (eql 'i))) 0)
 (defmethod chromatic-value ((mode (eql 'ii))) 2)
 (defmethod chromatic-value ((mode (eql 'iii))) 4)
@@ -100,6 +127,27 @@
 (defmethod chromatic-value ((mode (eql 'v))) 7)
 (defmethod chromatic-value ((mode (eql 'vi))) 9)
 (defmethod chromatic-value ((mode (eql 'vii))) 11)
+
+(defmethod diatonic-class ((mode (eql 'ionian))) 1)
+(defmethod diatonic-class ((mode (eql 'dorian))) 2)
+(defmethod diatonic-class ((mode (eql 'phrygian))) 3)
+(defmethod diatonic-class ((mode (eql 'lydian))) 4)
+(defmethod diatonic-class ((mode (eql 'mixolydian))) 5)
+(defmethod diatonic-class ((mode (eql 'aeolian))) 6)
+(defmethod diatonic-class ((mode (eql 'locrian))) 7)
+(defmethod diatonic-class ((mode (eql 'major))) 1)
+(defmethod diatonic-class ((mode (eql 'minor))) 6)
+(defmethod diatonic-class ((mode (eql 'harmonic-minor))) 6)
+(defmethod diatonic-class ((mode (eql 'melodic-minor))) 6)
+
+(defmethod diatonic-class ((scale-degree (eql 'tonic))) 1)
+(defmethod diatonic-class ((scale-degree (eql 'supertonic))) 2)
+(defmethod diatonic-class ((scale-degree (eql 'mediant))) 3)
+(defmethod diatonic-class ((scale-degree (eql 'subdominant))) 4)
+(defmethod diatonic-class ((scale-degree (eql 'dominant))) 5)
+(defmethod diatonic-class ((scale-degree (eql 'submediant))) 6)
+(defmethod diatonic-class ((scale-degree (eql 'subtonic))) 7)
+(defmethod diatonic-class ((scale-degree (eql 'leading-tone))) 7)
 
 (defmethod diatonic-value ((mode (eql 'ionian))) 1)
 (defmethod diatonic-value ((mode (eql 'dorian))) 2)
@@ -290,6 +338,15 @@
   (above (tonic key)
 	 (leading-tone (mode key))))
 
+(defmethod degree ((key key) degree)
+  "Get a degree."
+  (diatonic-class degree))
+
+(defmethod degree ((key key) (pitch-class pitch-class))
+  "Get the scale degree of a pitch class in the key."
+  (1+ (position (letter-name pitch-class)
+		(mapcar #'letter-name (scale key)))))
+
 (defmethod scale-degree ((key key) (degree integer))
   "Get a scale degree of a key."
   (declare (type (integer 1 7) degree))
@@ -341,3 +398,12 @@
      (diatonic-value (mode key))
      (diatonic-value mode)))
    mode))
+
+(defmethod secondary ((key key) degree)
+  "Get a secondary key on a scale degree of a key."
+  (make-key
+   (scale-degree key degree)
+   (mode (diatonic-class
+	  (add-diatonic-values
+	   (diatonic-value degree)
+	   (diatonic-value (mode key)))))))

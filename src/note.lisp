@@ -59,6 +59,8 @@
 (defmethod chromatic-offset ((accidental (eql '|#|))) 1)
 (defmethod chromatic-offset ((accidental (eql 'is))) 1)
 (defmethod chromatic-offset ((accidental (eql '♮))) 0)
+(defmethod chromatic-offset ((accidental (eql '||))) 0)
+(defmethod chromatic-offset ((accidental null)) 0)
 (defmethod chromatic-offset ((accidental (eql '♭))) -1)
 (defmethod chromatic-offset ((accidental (eql 'b))) -1)
 (defmethod chromatic-offset ((accidental (eql 'es))) -1)

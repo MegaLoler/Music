@@ -1,8 +1,8 @@
 (in-package :music)
 
-(defun symbol-from-char (char)
-  "Return a symbol from a character."
-  (read-from-string (string char)))
+(defun symbol-from-char (char &optional (eof-p t) eof-v)
+  "Return a symbol from a string designator."
+  (read-from-string (string char) eof-p eof-v))
 
 (defun num-char-p (c)
   "Whether a character is a number character."
@@ -20,12 +20,13 @@
 				:element-type 'character
 				:fill-pointer 0
 				:adjustable t)
-     :for c = (peek-char nil stream)
-     :until (cond ((stringp until)
-		   (position c until))
-		  ((functionp until)
-		   (funcall until c))
-		  (t (char= c until)))
+     :for c = (peek-char nil stream nil nil)
+     :until (or (null c)
+		(cond ((stringp until)
+		       (position c until))
+		      ((functionp until)
+		       (funcall until c))
+		      (t (char= c until))))
      :if (and escape (char= c escape))
      :do (progn
 	   (read-char stream)
@@ -35,6 +36,16 @@
 		(when consume-final-char
 		  (read-char stream))
 		(return result))))
+
+(defun read-until-not (until stream &optional escape consume-final-char)
+  "Read from stream until reaching a character that does not match any char in `until'."
+  (read-until (lambda (c)
+		(cond ((stringp until)
+		       (not (position c until)))
+		      ((functionp until)
+		       (not (funcall until c)))
+		      (t (not (char= c until)))))
+	      stream escape consume-final-char))
 
 (defun diatonic-to-chromatic-value (value)
   "Convert a diatonic value to a chromatic value."
@@ -101,8 +112,8 @@
   "Return the reciprocal of a value."
   (/ 1 value))
 
-(defun any-p (symbol symbols)
-  "Whether a symbol is any of a list of symbols."
+(defun any-p (object objects)
+  "Whether an object is any of a list of objects."
   (find-if (lambda (s)
-	     (eql symbol s))
-	   symbols))
+	     (equalp object s))
+	   objects))

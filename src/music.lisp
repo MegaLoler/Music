@@ -20,7 +20,7 @@
     :initarg  :harmony
     :initform nil
     :type     list
-    :accessor harmony)
+    :accessor env-harmony)
    (tempo
     :initarg  :tempo
     :initform (make-tempo 120)
@@ -100,7 +100,7 @@
    'environment
    :key       (key env)
    :reference (reference env)
-   :harmony   (harmony env)
+   :harmony   (env-harmony env)
    :tempo     (tempo env)
    :meter     (meter env)))
 
