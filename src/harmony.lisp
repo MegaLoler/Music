@@ -276,7 +276,7 @@
 	   				 (string (read-char stream))
 	   				 (read-until "/0123456789♯#♭b♮mMdDaAsS+-−°oOøØΔhH"
 	   					     stream)))
-	   (quality (symbol-from-char (read-until "/123456789♯#♭bsS" stream)))
+	   (quality (symbol-from-char (read-until "/123456789♯#♭bsS" stream) nil))
 	   (inversion-extension (read-until "/♯#♭baAsS°+oO" stream))
 	   (added (read-until "/♯#♭b°+oO" stream))
 	   (altered (read-altered (read-until "/" stream)))
