@@ -92,6 +92,14 @@
       (- off-time on-time)
       (reduce #'+ (realize-duration values on-time off-time env))))
 
+(defmethod total-duration ((duration list))
+  "Return the total duration of a list."
+  (reduce #'+ duration))
+
+(defmethod total-duration ((duration number))
+  "Return the duration value unchanged."
+  duration)
+
 (defmethod realize-on-time
     ((value real)
      &optional
@@ -123,7 +131,10 @@
      :with durations = (realize-duration values on-time off-time env)
      :for value :in values
      :for duration :in durations
-     :collect (finc time duration)))
+     :for result = (finc time (total-duration duration))
+     :collect (if (listp duration)
+		  (realize-on-time duration result time env)
+		  result)))
 
 (defmethod realize-off-time
     ((values list)
@@ -137,7 +148,11 @@
      :with durations = (realize-duration values on-time off-time env)
      :for value :in values
      :for duration :in durations
-     :collect (incf time duration)))
+     :for on = time
+     :for result = (incf time (total-duration duration))
+     :collect (if (listp duration)
+		  (realize-off-time duration on result env)
+		  result)))
 
 (defun sum-beat-values (values)
   "Return the total beat value of a list of beat values."

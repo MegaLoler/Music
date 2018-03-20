@@ -100,3 +100,9 @@
 (defun reciprocal (value)
   "Return the reciprocal of a value."
   (/ 1 value))
+
+(defun any-p (symbol symbols)
+  "Whether a symbol is any of a list of symbols."
+  (find-if (lambda (s)
+	     (eql symbol s))
+	   symbols))

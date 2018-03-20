@@ -58,7 +58,8 @@
        (velocity 80)
        (env (default-environment)))
   "Return an event from a realizable note."
-  (event (realize note env) on-time off-time velocity env))
+  (unless (typep note 'musical-rest)
+    (event (realize note env) on-time off-time velocity env)))
 
 (defmethod event
     ((interval interval)
@@ -92,7 +93,15 @@
   "Return a list of events."
   (loop
      :for note :in (realize notes env)
-     :collect (event note on-time off-time velocity env)))
+     :for on :in (if (listp on-time)
+		     on-time
+		     (make-list (length notes)
+				:initial-element on-time))
+     :for off :in (if (listp off-time)
+		      off-time
+		      (make-list (length notes)
+				 :initial-element off-time))
+     :collect (event note on off velocity env)))
 
 (defmethod event
     ((chord chord)
@@ -130,4 +139,4 @@
 			 note-off-time
 			 (* accent velocity)
 			 env)
-     :collect event))
+     :when event :collect event))

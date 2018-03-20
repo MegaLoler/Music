@@ -130,4 +130,5 @@
 	   realize-on-time
 	   realize-off-time
 	   sum-beat-values
-	   cat))
+	   cat
+	   concat))

@@ -149,3 +149,7 @@
 			 (append (accents chord) (accents (car rest))))
 		  (cdr rest)))
       chord))
+
+(defun concat (items)
+  "Apply `cat' to `items'."
+  (apply #'cat items))

@@ -3,6 +3,7 @@
 ;; todo:
 ;;   able to read keys as major if their designators dont specify a mode
 ;;   invert scale degrees in the context of a key
+;;   add "so" as alternative for "sol"
 
 (deftype scale-degree ()
   `(member tonic supertonic mediant subdominant dominant submediant subtonic leading-tone))

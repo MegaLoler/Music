@@ -6,6 +6,10 @@
 ;;   make interval above and below for pitch classes less hacky
 ;;   also read # and b as alternatives???  and is and es
 
+(deftype musical-rest ()
+  "Indicates a musical rest."
+  `(member rest r))
+
 (deftype letter-name ()
   "A letter name of a note."
   `(member a b c d e f g))
@@ -278,18 +282,30 @@
 
 (defmethod realize ((degree symbol) &optional (env (default-environment)))
   "Realize a note from a symbol in a musical environment."
-  (realize (if (typep degree '(or solfège-syllable scale-degree))
-	       (scale-degree (key env) degree)
-	       (note-or-pitch-class degree))
-	   env))
+  (if (typep degree 'musical-rest)
+      degree
+      (realize (if (typep degree '(or solfège-syllable scale-degree))
+		   (scale-degree (key env) degree)
+		   (note-or-pitch-class degree))
+	       env)))
 
 ;; include octave displacement indicators (< and >) and rests:
 
 (defmethod realize ((notes list) &optional (env (default-environment)))
   "Realize multiple notes in a musical environment."
-  (loop
-     :with env = (clone env)
-     :for note :in notes
-     :for realization = (realize note env)
-     :do (setf (reference env) (reference realization))
-     :collect realization))
+  (flet ((special-p (symbol) (or (any-p symbol '(> <))
+				 (typep symbol 'musical-rest))))
+    (loop
+       :with env = (clone env)
+       :for note :in notes
+       :for spec-p = (special-p note)
+       :for realization = (if spec-p
+			      (cond ((eql note '<)
+				     (below (reference env) (interval 'p8)))
+				    ((eql note '>)
+				     (above (reference env) (interval 'p8)))
+				    (t note))
+			      (realize note env))
+       :do (unless (typep note 'musical-rest) (setf (reference env) (reference realization)))
+       :unless (and spec-p
+		    (not (typep note 'musical-rest))) :collect realization)))
