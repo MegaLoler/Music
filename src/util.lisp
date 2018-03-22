@@ -124,3 +124,45 @@
     (0 nil)
     (1 list)
     (otherwise (append list (repeat list (1- n))))))
+
+(defun sort-val (val)
+  "T is sorted as 1 and nil is sorted as 0."
+  (cond ((eq val t) 1)
+	((eq val nil) 0)
+	(t val)))
+
+(defun score-sort (list &rest functions)
+  "Sort a list using a series of functions to score items."
+  (if functions
+      (apply #'append
+	     (loop
+		:with groupings = (gather (sort (score list (car functions))
+						(lambda (a b)
+						  (> (sort-val (cdr a))
+						     (sort-val (cdr b)))))
+					  (lambda (a b)
+					    (eq (cdr a)
+						(cdr b))))
+		:for grouping :in groupings
+		:collect (apply #'score-sort
+				(cons (mapcar #'car grouping)
+				      (cdr functions)))))
+      list))
+
+(defun score (list fn)
+  "Give items a score using a function."
+  (mapcar (lambda (item)
+	    (cons item (funcall fn item)))
+	  list))
+
+(defun gather (list &optional (predicate #'equalp) buffer)
+  "Group consecutive equal items in a list."
+  (if list
+      (if buffer
+	  (if (funcall predicate (car list) (car buffer))
+	      (gather (cdr list) predicate (cons (car list) buffer))
+	      (cons buffer (gather (cdr list) predicate (list (car list)))))
+	  (gather (cdr list) predicate (list (car list))))
+      (list buffer)))
+
+

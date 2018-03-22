@@ -201,15 +201,17 @@
 				   (make-list members :initial-element nil))
 	     :collect (above (if interval
 				 (above (scale-degree key (if (and suspension (= n 2))
-							      (+ (add-diatonic-values
-								  root-degree
-								  (diatonic-class suspension)))
+							      (diatonic-mod (add-diatonic-values
+									     root-degree
+									     (diatonic-class suspension))
+									    8)
 							      root-degree))
 					(interval interval))
 				 (scale-degree key (if (and suspension (= n 2))
-						       (+ (add-diatonic-values
-							   root-degree
-							   (diatonic-class suspension)))
+						       (diatonic-mod (add-diatonic-values
+								      root-degree
+								      (diatonic-class suspension))
+								     8)
 						       mod)))
 			     (make-interval 1 (+ offset alteration)))
 	     :into result

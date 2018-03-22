@@ -9,6 +9,9 @@
 	   rotate-left
 	   rotate-right
 	   repeat
+	   score-sort
+	   gather
+	   score
 
 	   defsong
 	   song
@@ -39,6 +42,9 @@
 	   note-or-pitch-class
 	   nearest
 	   realize
+	   realize-range
+	   note-equal
+	   pitch-class-equal
 
 	   quality-type
 	   perfect perf p
@@ -61,6 +67,7 @@
 	   sum
 	   difference
 	   reduce
+	   interval-equal
 
 	   key
 	   mode
@@ -153,4 +160,8 @@
 	   major dominant minor-major minor augmented-major augmented half-diminished
 	   maj ma mj j Δ min mi mn − - aug au ag a + dim di dm d o ° dom half-dim half-di half-dm half-d h-dim h-di h-dm h-d hdim hdi hdm hd min-maj mi-ma mn-mj mn-j m-m m-j minmaj mima mnmj mnj mj mm aug-maj au-ma ag-j ag-j a-m a-j augmaj auma agmj agj am aj
 	   sus2 sus4
-	   add2 add4 add9 add11 add13))
+	   add2 add4 add9 add11 add13
+
+	   make-voice
+	   make-bass-voice
+	   make-chorale))

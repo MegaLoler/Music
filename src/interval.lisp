@@ -227,3 +227,19 @@
 (defmethod difference ((a interval) (b interval))
   "Return the difference between two intervals."
   (operate a b #'subtract-diatonic-values #'-))
+
+(defun interval-equal (a b)
+  "Whether two intervals are equal."
+  (let ((a (interval a))
+	(b (interval b)))
+    (and (= (diatonic-value a)
+	    (diatonic-value b))
+	 (= (chromatic-value a)
+	    (chromatic-value b)))))
+
+(defun interval-diatonic-equal (a b)
+  "Whether two intervals are equal diatonically."
+  (let ((a (interval a))
+	(b (interval b)))
+    (= (diatonic-value a)
+       (diatonic-value b))))

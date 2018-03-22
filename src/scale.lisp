@@ -395,11 +395,10 @@
   (make-key
    (scale-degree
     key
-    (mod (-
-	  (diatonic-value mode)
-	  (diatonic-value (mode key))
-	  -1)
-	 7))
+    (1+ (mod (-
+	      (diatonic-value mode)
+	      (diatonic-value (mode key)))
+	     7)))
    mode))
 
 (defmethod secondary ((key key) degree)

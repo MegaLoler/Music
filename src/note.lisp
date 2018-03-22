@@ -177,6 +177,26 @@
   "Return the chromatic value of a note."
   (chromatic-offset (pitch-class note)))
 
+(defun note-equal (a b)
+  "Whether two notes are equal."
+  (let ((a (note a))
+	(b (note b)))
+    (and (eql (letter-name a)
+	      (letter-name b))
+	 (= (chromatic-offset a)
+	    (chromatic-offset b))
+	 (= (octave a)
+	    (octave b)))))
+
+(defun pitch-class-equal (a b)
+  "Whether two pitch class( are equal."
+  (let ((a (pitch-class a))
+	(b (pitch-class b)))
+    (and (eql (letter-name a)
+	      (letter-name b))
+	 (= (chromatic-offset a)
+	    (chromatic-offset b)))))
+
 (defmethod chromatic-class ((note note))
   "Return the chromatic class of a note."
   (chromatic-value (pitch-class note)))
@@ -313,3 +333,13 @@
        :do (unless (typep note 'musical-rest) (setf (reference env) (reference realization)))
        :unless (and spec-p
 		    (not (typep note 'musical-rest))) :collect realization)))
+
+(defun realize-range (pitch-class &optional (min 0) (max 9))
+  "Realize a pitch class for a range of octaves."
+  (loop
+     :for octave :from min :to max
+     :collect
+     (make-instance
+      'note
+      :pitch-class (pitch-class pitch-class)
+      :octave octave)))

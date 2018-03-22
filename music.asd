@@ -16,4 +16,5 @@
 			 (:file "rhythm")
 			 (:file "music")
 			 (:file "event")
-			 (:file "play")))))
+			 (:file "play")
+			 (:file "chorale")))))
