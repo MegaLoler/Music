@@ -8,6 +8,7 @@
 	   chromatic-class
 	   rotate-left
 	   rotate-right
+	   repeat
 
 	   defsong
 	   song
@@ -136,6 +137,7 @@
 	   sum-beat-values
 	   cat
 	   concat
+	   ref-env
 
 	   major minor augmented diminished
 	   dominant major minor-major minor augmented-major augmented half-diminished diminished

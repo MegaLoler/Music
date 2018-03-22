@@ -187,7 +187,6 @@
        suspension)
   "Return a set of pitch classes of a harmony built from the scale of a key."
   (declare (type (member nil 2 4) suspension))
-  (print suspension)
   (invert (loop
 	     :with key = (key key)
 	     :with root-degree = (degree key root)
@@ -319,3 +318,7 @@
 (defmethod harmony ((symbol symbol) &optional (env (default-environment)))
   "Make a harmony designated by a symbol."
   (harmony (string symbol) env))
+
+(defmethod harmony ((harmonies list) &optional (env (default-environment)))
+  "Make a list of harmonies by a list of designators."
+  (mapcar (lambda (harmony) (harmony harmony env)) harmonies))

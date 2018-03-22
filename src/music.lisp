@@ -90,6 +90,12 @@
 
 (defvar *global-environment* (make-instance 'environment))
 
+(defun ref-env (note &optional (env (default-environment)))
+  "Make a musical environment with a reference note."
+  (let ((env (clone env)))
+    (setf (reference env) (note note))
+    env))
+
 (defun default-environment ()
   "Return a default musical environment."
   *global-environment*)
@@ -104,9 +110,11 @@
    :tempo     (tempo env)
    :meter     (meter env)))
 
+;; not sure if the reference in nested lists should be the first or last...
 (defmethod reference ((list list))
   "Return the relevant reference note from a list of notes."
-  (reference (car (last (remove-if #'musical-rest-p list)))))
+;  (reference (car (last (remove-if #'musical-rest-p list)))))
+  (reference (car (remove-if #'musical-rest-p list))))
 
 (defmethod reference ((chord chord))
   "Return the relevant reference note from a chord of notes."
@@ -153,3 +161,10 @@
 (defun concat (items)
   "Apply `cat' to `items'."
   (apply #'cat items))
+
+(defmethod repeat ((seq seq) &optional (n 2))
+  "Repeat a musical sequence `n' times."
+  (case n
+    (0 (seq nil nil nil))
+    (1 seq)
+    (otherwise (cat seq (repeat seq (1- n))))))

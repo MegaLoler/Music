@@ -3,6 +3,7 @@
 ;; todo:
 ;;   able to read keys as major if their designators dont specify a mode
 ;;   invert scale degrees in the context of a key
+;;   make realizing scale degree names pay attention to chromatic value (like leading-tone)
 
 (deftype scale-degree ()
   `(member tonic supertonic mediant subdominant dominant submediant subtonic leading-tone))
@@ -190,7 +191,7 @@
 
 (defmethod tonic        ((mode (eql 'phrygian))) (interval 'p1))
 (defmethod supertonic   ((mode (eql 'phrygian))) (interval 'mi2))
-(defmethod mediant      ((mode (eql 'phrygian))) (interval 'ma3))
+(defmethod mediant      ((mode (eql 'phrygian))) (interval 'mi3))
 (defmethod subdominant  ((mode (eql 'phrygian))) (interval 'p4))
 (defmethod dominant     ((mode (eql 'phrygian))) (interval 'p5))
 (defmethod submediant   ((mode (eql 'phrygian))) (interval 'mi6))
@@ -394,9 +395,11 @@
   (make-key
    (scale-degree
     key
-    (subtract-diatonic-values
-     (diatonic-value (mode key))
-     (diatonic-value mode)))
+    (mod (-
+	  (diatonic-value mode)
+	  (diatonic-value (mode key))
+	  -1)
+	 7))
    mode))
 
 (defmethod secondary ((key key) degree)

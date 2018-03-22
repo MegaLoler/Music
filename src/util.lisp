@@ -117,3 +117,10 @@
   (find-if (lambda (s)
 	     (equalp object s))
 	   objects))
+
+(defmethod repeat ((list list) &optional (n 2))
+  "Repeat a list `n' times."
+  (case n
+    (0 nil)
+    (1 list)
+    (otherwise (append list (repeat list (1- n))))))
