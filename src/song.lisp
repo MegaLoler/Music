@@ -32,8 +32,23 @@
     :initarg :description
     :initform "It's a song!"
     :accessor description)
+   (key
+    :type key
+    :initarg :key
+    :initform (key 'c-major)
+    :accessor key)
+   (tempo
+    :type tempo
+    :initarg :tempo
+    :initform (make-tempo 120)
+    :accessor tempo)
+   (meter
+    :type meter
+    :initarg :meter
+    :initform (make-meter 4 4)
+    :accessor meter)
    (body
-    :type list ;; unsure yet
+    :type list
     :initarg :body
     :initform nil
     :accessor body))

@@ -137,7 +137,14 @@
 	   sum-beat-values
 	   cat
 	   concat
+	   join
 	   ref-env
+	   with-musical-environment
+	   with-key
+	   with-tempo
+	   with-meter
+	   with-reference-note
+	   with-harmony
 
 	   major minor augmented diminished
 	   dominant major minor-major minor augmented-major augmented half-diminished diminished

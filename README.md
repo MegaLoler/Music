@@ -6,6 +6,8 @@ Totally building it from scratch, there's lots to do and a lot is missing/broken
 
 It currently uses SBCL timers for queuing real time midi events, so it's SBCL dependant.
 
+See `examples/nyan.lisp` for an example of a song.
+
 ## Examples
 
 You can designate pitch classes with symbols:

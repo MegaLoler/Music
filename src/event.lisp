@@ -144,3 +144,19 @@
 			 (* accent velocity)
 			 env)
      :when event :collect event))
+
+(defmethod event
+    ((song song)
+     &optional
+       (on-time 0)
+       off-time
+       (velocity 80)
+       (env (default-environment)))
+  "Return events for a song."
+  (declare (ignore env)) ;; for now, later make it the parent env
+  (event (body song) on-time off-time velocity
+	 (make-instance
+	  'environment
+	  :meter (meter song)
+	  :tempo (tempo song)
+	  :key (key song))))

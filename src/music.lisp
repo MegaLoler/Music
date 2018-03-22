@@ -4,6 +4,7 @@
 ;;   make environments have Parents, and able to shadow each others values
 ;;   possibly also give environments Content.. that or create a musical Closure object or someting..
 ;;   make a small accent dsl with X and * and > and < and buncha symbols for indicating accent levels
+;;   with-meter, with-tempo, with-harmony
 
 (defclass environment ()
   ((key
@@ -80,6 +81,12 @@
    :beats   (or beats (make-list (length objects) :initial-element 1))
    :accents (or accents (make-list (length objects) :initial-element 1))))
 
+(defmethod note-count ((seq seq))
+  "Get how many notes and rests there are in a sequence."
+  (count-if (lambda (item)
+	      (not (any-p item '(> <))))
+	    (objects seq)))
+
 (defmacro v (&rest objects)
   "Make a chord."
   `(chord ',objects))
@@ -139,12 +146,26 @@
        (beats seq)
        (accents seq)))
 
+;; clean this up
 (defmethod cat ((seq seq) &rest rest)
   "Concatenate musical sequences."
   (if rest
       (apply #'cat
 	     (cons (seq (append (objects seq) (objects (car rest)))
-			(append (beats seq) (beats (car rest)))
+			(if (and (numberp (beats seq))
+				 (numberp (beats (car rest)))
+				 (= (beats seq)
+				    (beats (car rest))))
+			    (beats seq)
+			    (let ((a (if (listp (beats seq))
+					 (beats seq)
+					 (make-list (note-count seq)
+						    :initial-element (beats seq))))
+				  (b (if (listp (beats (car rest)))
+					 (beats (car rest))
+					 (make-list (note-count (car rest))
+						    :initial-element (beats (car rest))))))
+				  (append a b)))
 			(append (accents seq) (accents (car rest))))
 		   (cdr rest)))
       seq))
@@ -158,6 +179,15 @@
 		  (cdr rest)))
       chord))
 
+;; this isn't quite right...
+(defun join (&rest rest)
+  "Join musical sequences in groupings."
+  (concat (mapcar (lambda (seq)
+		    (seq (list (objects seq))
+			 (beats seq)
+			 (accents seq)))
+		 rest)))
+
 (defun concat (items)
   "Apply `cat' to `items'."
   (apply #'cat items))
@@ -168,3 +198,22 @@
     (0 (seq nil nil nil))
     (1 seq)
     (otherwise (cat seq (repeat seq (1- n))))))
+
+(defmacro with-music-environment (env &body body)
+  "Evaluate musical expressions in the context of a music environment."
+  `(let ((*global-environment* ,env))
+     ,@body))
+
+(defmacro with-key (key &body body)
+  "Evaluate musical expressions in the context of a key."
+  `(with-music-environment (make-instance
+			    `environment
+			    :key (key ,key))
+     ,@body))
+
+(defmacro with-reference-note (note &body body)
+  "Evaluate musical expressions in the context of a reference note."
+  `(with-music-environment (make-instance
+			    `environment
+			    :reference (note ,note))
+     ,@body))
