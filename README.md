@@ -161,8 +161,7 @@ Which implicitely wraps the expression in `event` first:
 ```lisp
 (event (seq '(> sol la < ri mi re me re do do re)
 	        '(2 2 4 2 4 4 4 2 2 2)))
-;; => (G4@0s-1/4s A4@1/4s-1/2s D♯4@1/2s-5/8s E4@5/8s-7/8s D4@7/8s-1s E♭4@1s-9/8s
- D4@9/8s-5/4s C4@5/4s-3/2s C4@3/2s-7/4s D4@7/4s-2s)
+;; => (G4@0s-1/4s A4@1/4s-1/2s D♯4@1/2s-5/8s E4@5/8s-7/8s D4@7/8s-1s E♭4@1s-9/8s D4@9/8s-5/4s C4@5/4s-3/2s C4@3/2s-7/4s D4@7/4s-2s)
 ```
 
 Which turns the expression into a list of timed events.
