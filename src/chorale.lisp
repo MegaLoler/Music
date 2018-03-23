@@ -42,7 +42,7 @@
 			       ;; no crossing voices
 			       (lambda (note)
 				 (<= (diatonic-value (difference note bass))
-				     25))
+				     22))
 			       (lambda (note)
 				 (- (count-if (lambda (a)
 						(note-equal a note))

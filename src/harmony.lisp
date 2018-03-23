@@ -173,6 +173,7 @@
   "Return how many chord members in a chord of some extension."
   (/ (1+ ext) 2))
 
+;; this is a huge mess and needs to be fixed
 (defun make-harmony
     (&key
        (key (key 'c-major))
@@ -204,14 +205,14 @@
 							      (diatonic-mod (add-diatonic-values
 									     root-degree
 									     (diatonic-class suspension))
-									    8)
+									    7)
 							      root-degree))
 					(interval interval))
 				 (scale-degree key (if (and suspension (= n 2))
 						       (diatonic-mod (add-diatonic-values
 								      root-degree
 								      (diatonic-class suspension))
-								     8)
+								     7)
 						       mod)))
 			     (make-interval 1 (+ offset alteration)))
 	     :into result
@@ -222,9 +223,10 @@
 			  (lambda (degree)
 			    (scale-degree
 			     key
-			     (+ (add-diatonic-values
-				 root-degree
-				 (diatonic-class degree)))))
+			     (diatonic-mod (add-diatonic-values
+					    root-degree
+					    (diatonic-class degree))
+					   7)))
 			  additions))))
 	     inversion))
 
