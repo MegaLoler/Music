@@ -12,8 +12,13 @@
     (and a1 b1 a2 b2
 	 (let ((i (difference a1 b1))
 	       (i2 (difference a2 b2)))
+	   ;; it'd be better just to Reduce the intervals first, silly
 	   (when (or (interval-diatonic-equal i 'p5)
 		     (interval-diatonic-equal i 'p8)
+		     (interval-diatonic-equal i 'p12)
+		     (interval-diatonic-equal i 'p15)
+		     (interval-diatonic-equal i 'p19)
+		     (interval-diatonic-equal i 'p22)
 		     (interval-diatonic-equal i 'p1))
 	     (and (interval-diatonic-equal i i2)
 		  (not (note-equal a1 a2))))))))
@@ -66,10 +71,10 @@
   "Part-write a bass voice following a chord progression."
   (realize (mapcar #'car progression) env))
 
-(defun make-chorale (progression &optional (voice-count 3) voices (env (default-environment)))
+(defun make-chorale (progression &optional (voice-count 4) voices (env (default-environment)))
   "Part-write a chorale following a chord progression."
-  (let ((voices (or voices (list (make-bass-voice progression (ref-env 'c2))))))
-    (if (> voice-count 0)
+  (let ((voices (or voices (list (make-bass-voice progression (ref-env 'g2))))))
+    (if (> voice-count 1)
 	(let ((voices (append (list (make-voice progression voices nil nil env)) voices)))
 	  (make-chorale progression (1- voice-count) voices env))
 	voices)))

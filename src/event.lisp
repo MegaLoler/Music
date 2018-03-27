@@ -20,15 +20,21 @@
     :initarg :off-time
     :initform 1
     :type real
-    :accessor off-time))
+    :accessor off-time)
+   (channel
+    :initarg :channel
+    :initform 0
+    :type (integer 0 15)
+    :accessor channel))
   (:documentation "A concrete musical event, a note to play in real time."))
 
 (defmethod print-object ((event event) stream)
   "Print an event object."
-  (format stream "~A@~As-~As"
+  (format stream "~A@~As-~As#~A"
 	  (note event)
 	  (on-time event)
-	  (off-time event)))
+	  (off-time event)
+	  (channel event)))
 
 (defmethod reference ((event event))
   "Return the note of an event as its own reference."
@@ -40,6 +46,7 @@
        (on-time 0)
        off-time
        (velocity 80)
+       (channel 0)
        (env (default-environment)))
   "Return an event from a note."
   (declare (ignore env))
@@ -48,7 +55,8 @@
    :note note
    :on-time on-time
    :off-time (or off-time (+ on-time 1))
-   :velocity velocity))
+   :velocity velocity
+   :channel channel))
 
 (defmethod event
     (note
@@ -56,10 +64,11 @@
        (on-time 0)
        off-time
        (velocity 80)
+       (channel 0)
        (env (default-environment)))
   "Return an event from a realizable note."
   (unless (typep note 'musical-rest)
-    (event (realize note env) on-time off-time velocity env)))
+    (event (realize note env) on-time off-time velocity channel env)))
 
 (defmethod event
     ((interval interval)
@@ -67,11 +76,12 @@
        (on-time 0)
        off-time
        (velocity 80)
+       (channel 0)
        (env (default-environment)))
   "Return two events from an interval."
   (event (list (reference env)
 	       (above (reference env) interval))
-	 on-time off-time velocity env))
+	 on-time off-time velocity channel env))
 
 (defmethod event
     ((key key)
@@ -79,9 +89,10 @@
        (on-time 0)
        off-time
        (velocity 80)
+       (channel 0)
        (env (default-environment)))
   "Return events for the notes of a scale."
-  (event (seq (full-scale key)) on-time off-time velocity env))
+  (event (seq (full-scale key)) on-time off-time velocity channel env))
 
 (defmethod event
     ((notes list)
@@ -89,6 +100,7 @@
        (on-time 0)
        off-time
        (velocity 80)
+       (channel 0)
        (env (default-environment)))
   "Return a list of events."
   (loop
@@ -101,7 +113,7 @@
 		      off-time
 		      (make-list (length notes)
 				 :initial-element off-time))
-     :collect (event note on off velocity env)))
+     :collect (event note on off velocity channel env)))
 
 (defmethod event
     ((chord chord)
@@ -109,6 +121,7 @@
        (on-time 0)
        off-time
        (velocity 80)
+       (channel 0)
        (env (default-environment)))
   "Return events for the notes of a chord."
   (loop
@@ -118,6 +131,27 @@
 		     on-time
 		     off-time
 		     (* accent velocity)
+		     channel
+		     env)))
+
+(defmethod event
+    ((voices voices)
+     &optional
+       (on-time 0)
+       off-time
+       (velocity 80)
+       (channel 0)
+       (env (default-environment)))
+  "Return events for the notes of a group of voices."
+  (loop
+     :for note :in (objects (realize voices env))
+     :for accent :in (accents voices)
+     :for i :from 0
+     :collect (event note
+		     on-time
+		     off-time
+		     (* accent velocity)
+		     (+ channel i)
 		     env)))
 
 (defmethod event
@@ -126,6 +160,7 @@
        (on-time 0)
        off-time
        (velocity 80)
+       (channel 0)
        (env (default-environment)))
   "Return events for the notes of a sequence."
   (loop
@@ -142,6 +177,7 @@
 			 note-on-time
 			 note-off-time
 			 (* accent velocity)
+			 channel
 			 env)
      :when event :collect event))
 
@@ -151,10 +187,11 @@
        (on-time 0)
        off-time
        (velocity 80)
+       (channel 0)
        (env (default-environment)))
   "Return events for a song."
   (declare (ignore env)) ;; for now, later make it the parent env
-  (event (body song) on-time off-time velocity
+  (event (body song) on-time off-time velocity channel
 	 (make-instance
 	  'environment
 	  :meter (meter song)

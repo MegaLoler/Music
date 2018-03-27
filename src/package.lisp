@@ -129,6 +129,7 @@
 	   event
 	   container
 	   chord
+	   voices
 	   seq
 	   v h
 	   tempo
@@ -139,6 +140,7 @@
 	   duration
 	   on-time
 	   off-time
+	   channel
 	   realize-on-time
 	   realize-off-time
 	   sum-beat-values
@@ -152,6 +154,7 @@
 	   with-meter
 	   with-reference-note
 	   with-harmony
+	   objects
 
 	   major minor augmented diminished
 	   dominant major minor-major minor augmented-major augmented half-diminished diminished
@@ -164,4 +167,10 @@
 
 	   make-voice
 	   make-bass-voice
-	   make-chorale))
+	   make-chorale
+
+	   lily
+
+	   tuning
+	   frequency
+	   *standard-tuning*))

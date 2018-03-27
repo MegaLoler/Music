@@ -50,6 +50,9 @@
 (defclass chord (container) ()
   (:documentation "A vertical sequence of musical objects."))
 
+(defclass voices (chord) ()
+  (:documentation "A vertical sequence of musical objects representing individual voices."))
+
 (defclass seq (container)
   ((beats
     :initarg  :beats
@@ -62,6 +65,10 @@
   "Print a chord."
   (prin1 `(chord (list ,@(objects chord))) stream))
 
+(defmethod print-object ((voices voices) stream)
+  "Print a group of voices."
+  (prin1 `(voices (list ,@(objects voices))) stream))
+
 (defmethod print-object ((seq seq) stream)
   "Print a sequence."
   (prin1 `(seq (list ,@(objects seq))) stream))
@@ -70,6 +77,13 @@
   "Make a chord from a list of musical objects."
   (make-instance
    'chord
+   :objects objects
+   :accents (or accents (make-list (length objects) :initial-element 1))))
+
+(defun voices (objects &optional accents)
+  "Make a group of voices from a list of musical objects."
+  (make-instance
+   'voices
    :objects objects
    :accents (or accents (make-list (length objects) :initial-element 1))))
 
@@ -139,6 +153,11 @@
   "Realize a chord in a musical environment."
   (chord (realize (objects chord) env)
 	 (accents chord)))
+
+(defmethod realize ((voices voices) &optional (env (default-environment)))
+  "Realize a group of voices in a musical environment."
+  (voices (realize (objects voices) env)
+	  (accents voices)))
 
 (defmethod realize ((seq seq) &optional (env (default-environment)))
   "Realize a musical sequence in a musical environment."

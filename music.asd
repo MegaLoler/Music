@@ -17,4 +17,6 @@
 			 (:file "music")
 			 (:file "event")
 			 (:file "play")
-			 (:file "chorale")))))
+			 (:file "chorale")
+			 (:file "lilypond")
+ (:file "tuning")))))
