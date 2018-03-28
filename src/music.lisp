@@ -7,32 +7,88 @@
 ;;   with-meter, with-tempo, with-harmony
 
 (defclass environment ()
-  ((key
+  ((parent
+    :initarg :parent
+    :initform nil
+    :accessor parent)
+   (key
     :initarg  :key
-    :initform (key 'c-major)
-    :type     key
-    :accessor key)
+    :initform nil
+    :type     (or null key)
+    :accessor local-key)
    (reference
     :initarg  :reference
-    :initform (note 'c4)
-    :type     note
-    :accessor reference)
+    :initform nil
+    :type     (or null note)
+    :accessor local-reference)
    (harmony
     :initarg  :harmony
     :initform nil
-    :type     list
-    :accessor env-harmony)
+    :type     (or null list)
+    :accessor local-env-harmony)
    (tempo
     :initarg  :tempo
-    :initform (make-tempo 120)
-    :type     tempo
-    :accessor tempo)
+    :initform nil
+    :type     (or null tempo)
+    :accessor local-tempo)
    (meter
     :initarg  :meter
-    :initform (make-meter 4 4)
-    :type     meter
-    :accessor meter))
+    :initform nil
+    :type     (or null meter)
+    :accessor local-meter)
+   (channel
+    :initarg  :channel
+    :initform nil
+    :type     (or null (integer 0 15))
+    :accessor local-channel)
+   (tuning
+    :initarg  :tuning
+    :initform nil
+    :type     (or null tuning)
+    :accessor local-tuning))
   (:documentation "A musical environment in which musical objects are performed."))
+
+(defmethod key ((env environment))
+  "Return the visible key of an environment."
+  (or (local-key env)
+      (and (parent env)
+	   (key (parent env)))))
+
+(defmethod reference ((env environment))
+  "Return the visible referenc of an environment."
+  (or (local-reference env)
+      (and (parent env)
+	   (reference (parent env)))))
+
+(defmethod env-harmony ((env environment))
+  "Return the visible harmony of an environment."
+  (or (local-env-harmony env)
+      (and (parent env)
+	   (env-harmony (parent env)))))
+
+(defmethod tempo ((env environment))
+  "Return the visible tempo of an environment."
+  (or (local-tempo env)
+      (and (parent env)
+	   (tempo (parent env)))))
+
+(defmethod meter ((env environment))
+  "Return the visible meter of an environment."
+  (or (local-key env)
+      (and (parent env)
+	   (key (parent env)))))
+
+(defmethod channel ((env environment))
+  "Return the visible channel of an environment."
+  (or (local-channel env)
+      (and (parent env)
+	   (channel (parent env)))))
+
+(defmethod tuning ((env environment))
+  "Return the visible tuning of an environment."
+  (or (local-tuning env)
+      (and (parent env)
+	   (tuning (parent env)))))
 
 (defclass container ()
   ((objects
@@ -109,12 +165,20 @@
   "Make a sequence."
   `(seq ',objects))
 
-(defvar *global-environment* (make-instance 'environment))
+(defvar *global-environment* (make-instance
+			      'environment
+			      :key (key 'c-major)
+			      :reference (note 'c4)
+			      :harmony nil
+			      :tempo (make-tempo 120)
+			      :meter (make-meter 4 4)
+			      :channel 0
+			      :tuning *standard-tuning*))
 
 (defun ref-env (note &optional (env (default-environment)))
   "Make a musical environment with a reference note."
   (let ((env (clone env)))
-    (setf (reference env) (note note))
+    (setf (local-reference env) (note note))
     env))
 
 (defun default-environment ()
@@ -125,11 +189,14 @@
   "Clone a musical environment."
   (make-instance
    'environment
-   :key       (key env)
-   :reference (reference env)
-   :harmony   (env-harmony env)
-   :tempo     (tempo env)
-   :meter     (meter env)))
+   :parent    (parent env)
+   :key       (local-key env)
+   :reference (local-reference env)
+   :harmony   (local-env-harmony env)
+   :tempo     (local-tempo env)
+   :meter     (local-meter env)
+   :channel   (local-channel env)
+   :tuning    (local-tuning env)))
 
 ;; not sure if the reference in nested lists should be the first or last...
 (defmethod reference ((list list))
@@ -223,16 +290,18 @@
   `(let ((*global-environment* ,env))
      ,@body))
 
-(defmacro with-key (key &body body)
+(defmacro with-key ((key &optional env) &body body)
   "Evaluate musical expressions in the context of a key."
   `(with-music-environment (make-instance
 			    `environment
+			    :parent (or ,env (default-environment))
 			    :key (key ,key))
      ,@body))
 
-(defmacro with-reference-note (note &body body)
+(defmacro with-reference-note ((note &optional env) &body body)
   "Evaluate musical expressions in the context of a reference note."
   `(with-music-environment (make-instance
 			    `environment
+			    :parent (or ,env (default-environment))
 			    :reference (note ,note))
      ,@body))

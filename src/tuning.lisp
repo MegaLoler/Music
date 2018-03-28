@@ -17,13 +17,13 @@
   "Return the reference octave of a tuning."
   (octave (reference-note tuning)))
 
-(defgeneric frequency (tuning note)
+(defgeneric tuning-frequency (tuning note)
   (:documentation "Return the frequency of a note according to a tuning system."))
 
 (defclass equal-temperament (tuning)
   ())
 
-(defmethod frequency ((tuning equal-temperament) note)
+(defmethod tuning-frequency ((tuning equal-temperament) note)
   "Return the frequency of a note according to equal temperament."
   (* (reference-frequency tuning)
      (expt (expt 2 1/12)

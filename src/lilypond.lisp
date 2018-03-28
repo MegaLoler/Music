@@ -1,5 +1,7 @@
 (in-package :music)
 
+;; barely started at all
+
 (defmethod lily ((note note) &optional (stream t))
   "Print an absolute note in lilypond format."
   (lily (letter-name note) stream)

@@ -330,7 +330,7 @@
 				     (above (reference env) (interval 'p8)))
 				    (t note))
 			      (realize note env))
-       :do (unless (typep note 'musical-rest) (setf (reference env) (reference realization)))
+       :do (unless (typep note 'musical-rest) (setf (local-reference env) (reference realization)))
        :unless (and spec-p
 		    (not (typep note 'musical-rest))) :collect realization)))
 
@@ -343,3 +343,7 @@
       'note
       :pitch-class (pitch-class pitch-class)
       :octave octave)))
+
+(defmethod frequency ((note note) &optional (env (default-environment)))
+  "Return the frequency of a note."
+  (tuning-frequency (tuning env) note))
