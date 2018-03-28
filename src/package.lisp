@@ -154,7 +154,12 @@
 	   with-meter
 	   with-reference-note
 	   with-harmony
+	   with-channel
 	   objects
+	   musical-closure
+	   closure
+	   reference
+	   group-events
 
 	   major minor augmented diminished
 	   dominant major minor-major minor augmented-major augmented half-diminished diminished

@@ -8,8 +8,9 @@
 	(metadata (when (listp name-and-metadata)
 		    (cdr name-and-metadata))))
     `(defparameter ,name
-       (make-instance 'song
-		      :body (list ,@body) ,@metadata))))
+       (make-instance
+	'song
+	:body (list ,@body) ,@metadata))))
 
 (defclass song ()
   ((title

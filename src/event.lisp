@@ -46,17 +46,16 @@
        (on-time 0)
        off-time
        (velocity 80)
-       (channel 0)
+       channel
        (env (default-environment)))
   "Return an event from a note."
-  (declare (ignore env))
   (make-instance
    'event
    :note note
    :on-time on-time
    :off-time (or off-time (+ on-time 1))
    :velocity velocity
-   :channel channel))
+   :channel (or channel (channel env))))
 
 (defmethod event
     (note
@@ -64,7 +63,7 @@
        (on-time 0)
        off-time
        (velocity 80)
-       (channel 0)
+       channel
        (env (default-environment)))
   "Return an event from a realizable note."
   (unless (typep note 'musical-rest)
@@ -76,7 +75,7 @@
        (on-time 0)
        off-time
        (velocity 80)
-       (channel 0)
+       channel
        (env (default-environment)))
   "Return two events from an interval."
   (event (list (reference env)
@@ -89,7 +88,7 @@
        (on-time 0)
        off-time
        (velocity 80)
-       (channel 0)
+       channel
        (env (default-environment)))
   "Return events for the notes of a scale."
   (event (seq (full-scale key)) on-time off-time velocity channel env))
@@ -100,7 +99,7 @@
        (on-time 0)
        off-time
        (velocity 80)
-       (channel 0)
+       channel
        (env (default-environment)))
   "Return a list of events."
   (loop
@@ -121,7 +120,7 @@
        (on-time 0)
        off-time
        (velocity 80)
-       (channel 0)
+       channel
        (env (default-environment)))
   "Return events for the notes of a chord."
   (loop
@@ -140,7 +139,7 @@
        (on-time 0)
        off-time
        (velocity 80)
-       (channel 0)
+       channel
        (env (default-environment)))
   "Return events for the notes of a group of voices."
   (loop
@@ -151,7 +150,7 @@
 		     on-time
 		     off-time
 		     (* accent velocity)
-		     (+ channel i)
+		     (+ (or 0 channel) i)
 		     env)))
 
 (defmethod event
@@ -160,7 +159,7 @@
        (on-time 0)
        off-time
        (velocity 80)
-       (channel 0)
+       channel
        (env (default-environment)))
   "Return events for the notes of a sequence."
   (loop
@@ -187,13 +186,40 @@
        (on-time 0)
        off-time
        (velocity 80)
-       (channel 0)
+       channel
        (env (default-environment)))
   "Return events for a song."
-  (declare (ignore env)) ;; for now, later make it the parent env
   (event (body song) on-time off-time velocity channel
 	 (make-instance
 	  'environment
+	  :parent env
 	  :meter (meter song)
 	  :tempo (tempo song)
 	  :key (key song))))
+
+(defmethod event
+    ((closure musical-closure)
+     &optional
+       (on-time 0)
+       off-time
+       (velocity 80)
+       channel
+       (env (default-environment)))
+  "Return events for a song."
+  (declare (ignore env))
+  (event (content closure)
+	 on-time off-time velocity channel
+	 (environment closure)))
+
+(defun group-events (events)
+  "Group events by common start time."
+  (flet ((get-group (key groups)
+	   (or (gethash key groups)
+	       (setf (gethash key groups) (list)))))
+    (loop
+       :with groups = (make-hash-table)
+       :for event :in (flatten events)
+       :for group = (get-group (on-time event) groups)
+       :do (setf (gethash (on-time event) groups)
+		 (cons event (gethash (on-time event) groups)))
+       :finally (return (loop :for x :being :the hash-values :of groups :collect x)))))

@@ -1,10 +1,9 @@
 (in-package :music)
 
 ;; TODO
-;;   make environments have Parents, and able to shadow each others values
 ;;   possibly also give environments Content.. that or create a musical Closure object or someting..
 ;;   make a small accent dsl with X and * and > and < and buncha symbols for indicating accent levels
-;;   with-meter, with-tempo, with-harmony
+;;   with-meter, with-tempo, with-harmony, etc
 
 (defclass environment ()
   ((parent
@@ -305,3 +304,49 @@
 			    :parent (or ,env (default-environment))
 			    :reference (note ,note))
      ,@body))
+
+(defmacro with-channel ((channel &optional env) &body body)
+  "Evaluate musical expressions in the context of an output channel."
+  `(with-music-environment (make-instance
+			    `environment
+			    :parent (or ,env (default-environment))
+			    :channel ,channel)
+     ,@body))
+
+(defmacro with-tempo ((tempo &optional env) &body body)
+  "Evaluate musical expressions in the context of a tempo."
+  `(with-music-environment (make-instance
+			    `environment
+			    :parent (or ,env (default-environment))
+			    :tempo ,tempo)
+     ,@body))
+
+(defclass musical-closure ()
+  ((content
+    :initarg :content
+    :initform nil
+    :type list
+    :accessor content)
+   (environment
+    :initarg :environment
+    :initform (default-environment)
+    :type environment
+    :accessor environment))
+  (:documentation "Associate musical objects with an environment."))
+
+(defmacro closure ((&optional env) &body body)
+  "Put content into a musical closure."
+  `(make-instance
+    'musical-closure
+    :content (list ,@body)
+    :environment (or ,env (default-environment))))
+
+(defmethod realize ((closure musical-closure) &optional (env (default-environment)))
+  "Realize a musical closure in a musical environment."
+  (declare (ignore env))
+  (closure ((environment closure))
+    (realize (content closure) (environment closure))))
+
+(defmethod reference ((closure musical-closure))
+  "Get the reference of a closure."
+  (reference (content closure)))
