@@ -19,4 +19,5 @@
 			 (:file "event")
 			 (:file "play")
 			 (:file "chorale")
- (:file "lilypond")))))
+ (:file "lilypond")
+ (:file "instrument")))))

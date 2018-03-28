@@ -150,7 +150,7 @@
 		     on-time
 		     off-time
 		     (* accent velocity)
-		     (+ (or 0 channel) i)
+		     (+ (or channel 0) i)
 		     env)))
 
 (defmethod event

@@ -178,4 +178,11 @@
 
 	   tuning
 	   frequency
-	   *standard-tuning*))
+	   *standard-tuning*
+
+	   instrument
+	   adsr-instrument
+	   envelope
+	   adsr
+	   on-value
+	   off-value))
